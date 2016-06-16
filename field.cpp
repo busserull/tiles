@@ -92,6 +92,11 @@ void Field::toggleOpen(int x, int y){
   field[(y * width + x)].isOpen = !field[(y * width + x)].isOpen;
 }
 
+void Field::toggleFlag(int x, int y, std::string name){
+  field[(y * width + x)].isFlagged = !field[(y * width + x)].isFlagged;
+  field[(y * width + x)].flagger = name;
+}
+
 std::ostream& operator << (std::ostream& stream, const Field& board){
   for(int y = board.height - 1; y >= 0; y--){
     for(int x = 0; x < board.width; x++){
