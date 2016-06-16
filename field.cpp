@@ -84,6 +84,10 @@ bool Field::isOpen(int x, int y) const{
   return field[(y * width + x)].isOpen;
 }
 
+bool Field::isMine(int x, int y) const{
+  return field[(y * width + x)].isMine;
+}
+
 void Field::toggleOpen(int x, int y){
   field[(y * width + x)].isOpen = !field[(y * width + x)].isOpen;
 }

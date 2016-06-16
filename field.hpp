@@ -19,6 +19,7 @@ public:
   ~Field();
   void placeMines(int openX, int openY);
   bool isOpen(int x, int y) const;
+  bool isMine(int x, int y) const;
   void toggleOpen(int x, int y);
   friend std::ostream& operator << (std::ostream& stream, const Field& board);
 private:
