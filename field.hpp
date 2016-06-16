@@ -12,7 +12,10 @@ struct Tile{
 
 class Field{
 public:
+  Field();
   Field(int height, int width, int mines);
+  Field(const Field& other);
+  Field& operator = (const Field& rhs);
   ~Field();
   void placeMines(int openX, int openY);
   bool isOpen(int x, int y) const;

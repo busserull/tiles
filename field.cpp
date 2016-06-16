@@ -2,6 +2,10 @@
 #include "utilities.hpp"
 #include <stdexcept>
 
+Field::Field() : height(0), width(0), mines(0) {
+  field = nullptr;
+}
+
 Field::Field(int height, int width, int mines)
 : height(height), width(width), mines(mines) {
   field = new Tile[(height * width)];
@@ -10,6 +14,31 @@ Field::Field(int height, int width, int mines)
     field[i].isMine = false;
     field[i].isFlagged = false;
   }
+}
+
+Field::Field(const Field& other){
+  height = other.height;
+  width = other.width;
+  mines = other.mines;
+  field = new Tile[(height * width)];
+  for(int i = 0; i < (height * width); i++){
+    field[i] = other.field[i];
+  }
+}
+
+Field& Field::operator = (const Field& rhs){
+  if(this == &rhs){
+    return (*this);
+  }
+  delete[] field;
+  mines = rhs.mines;
+  width = rhs.width;
+  height = rhs.height;
+  field = new Tile[(height * width)];
+  for(int i = 0; i < (height * width); i++){
+    field[i] = rhs.field[i];
+  }
+  return (*this);
 }
 
 Field::~Field(){
