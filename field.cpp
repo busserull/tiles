@@ -51,7 +51,7 @@ void Field::placeMines(int openX, int openY){
   delete[] fieldArray;
 }
 
-bool Field::isOpen(int x, int y){
+bool Field::isOpen(int x, int y) const{
   return field[(y * width + x)].isOpen;
 }
 
