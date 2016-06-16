@@ -23,6 +23,7 @@ private:
   int height;
   int width;
   int mines;
+  const Tile& at(int x, int y) const;
 };
 
 #endif

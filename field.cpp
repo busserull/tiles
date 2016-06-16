@@ -60,11 +60,26 @@ void Field::toggleOpen(int x, int y){
 }
 
 std::ostream& operator << (std::ostream& stream, const Field& board){
-  for(int i = board.height - 1; i >= 0; i--){
-    for(int j = 0; j < board.width; j++){
-      stream << (board.field[(i * board.width + j)].isMine ? 'X' : 'O');
+  for(int y = board.height - 1; y >= 0; y--){
+    for(int x = 0; x < board.width; x++){
+      if(board.at(x, y).isMine && !board.at(x, y).isOpen){
+        stream << 'm';
+      }
+      else if(board.at(x, y).isMine && board.at(x, y).isOpen){
+        stream << 'M';
+      }
+      else if(board.at(x, y).isOpen){
+        stream << '-';
+      }
+      else{
+        stream << 'O';
+      }
     }
     stream << std::endl;
   }
   return stream;
+}
+
+const Tile& Field::at(int x, int y) const{
+  return field[(y * width + x)];
 }
