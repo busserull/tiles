@@ -4,23 +4,15 @@
 
 Field::Field(int height, int width, int mines)
 : height(height), width(width), mines(mines) {
-  field = new Tile*[width];
-  for(int i = 0; i < width; i++){
-    field[i] = new Tile[height];
-  }
-  for(int i = 0; i < width; i++){
-    for(int j = 0; j < height; j++){
-      field[i][j].isOpen = false;
-      field[i][j].isMine = false;
-      field[i][j].isFlagged = false;
-    }
+  field = new Tile[(height * width)];
+  for(int i = 0; i < (height * width); i++){
+    field[i].isOpen = false;
+    field[i].isMine = false;
+    field[i].isFlagged = false;
   }
 }
 
 Field::~Field(){
-  for(int i = 0; i < width; i++){
-    delete[] field[i];
-  }
   delete[] field;
   field = nullptr;
 }
@@ -51,7 +43,7 @@ void Field::placeMines(int openX, int openY){
     if(fieldArray[index] != -1){
       int x = fieldArray[index] % width;
       int y = fieldArray[index] / width;
-      field[x][y].isMine = true;
+      field[(y * width + x)].isMine = true;
       minesLeft--;
     }
     index++;
@@ -60,17 +52,17 @@ void Field::placeMines(int openX, int openY){
 }
 
 bool Field::isOpen(int x, int y){
-  return field[x][y].isOpen;
+  return field[(y * width + x)].isOpen;
 }
 
 void Field::toggleOpen(int x, int y){
-  field[x][y].isOpen = !field[x][y].isOpen;
+  field[(y * width + x)].isOpen = !field[(y * width + x)].isOpen;
 }
 
 std::ostream& operator << (std::ostream& stream, const Field& board){
   for(int i = board.height - 1; i >= 0; i--){
     for(int j = 0; j < board.width; j++){
-      stream << (board.field[j][i].isMine ? 'X' : 'O');
+      stream << (board.field[(i * board.width + j)].isMine ? 'X' : 'O');
     }
     stream << std::endl;
   }
