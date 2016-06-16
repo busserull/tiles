@@ -8,7 +8,7 @@ namespace ut{
   }
 
   void shuffleArray(int *arr, int length){
-    int *i = (arr + length - 1);
+    int *i = (arr + length);
     while((i - arr) > 1){
       int index = randInclusive(0, (i - arr - 1));
       int temp = *(i - 1);
