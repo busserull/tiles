@@ -8,6 +8,7 @@ struct Tile{
   bool isMine;
   bool isFlagged;
   std::string flagger;
+  int surrounding;
 };
 
 class Field{
@@ -32,6 +33,7 @@ private:
   int height;
   int width;
   int mines;
+  void initializeMineCount();
   const Tile& at(int x, int y) const;
 };
 

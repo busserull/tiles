@@ -78,6 +78,7 @@ void Field::placeMines(int openX, int openY){
     index++;
   }
   delete[] fieldArray;
+  initializeMineCount();
 }
 
 bool Field::isOpen(int x, int y) const{
@@ -110,17 +111,7 @@ void Field::toggleFlag(int x, int y, std::string name){
 }
 
 int Field::getSurroundingMines(int x, int y){
-  int mines = 0;
-  for(int i = -1; i <= 1; i++){
-    for(int j = -1; j <= 1; j++){
-      int col = x + i;
-      int row = y + j;
-      if(col >= 0 && col < width && row >= 0 && row < height && (i != 0 || j != 0)){
-        mines += at(col, row).isMine;
-      }
-    }
-  }
-  return mines;
+  return field[(y * width + x)].surrounding;
 }
 
 std::ostream& operator << (std::ostream& stream, const Field& board){
@@ -146,4 +137,22 @@ std::ostream& operator << (std::ostream& stream, const Field& board){
 
 const Tile& Field::at(int x, int y) const{
   return field[(y * width + x)];
+}
+
+void Field::initializeMineCount(){
+  for(int x = 0; x < width; x++){
+    for(int y = 0; y < height; y++){
+      int mineCount = 0;
+      for(int i = -1; i <= 1; i++){
+        for(int j = -1; j <= 1; j++){
+          int col = x + i;
+          int row = y + j;
+          if(col >= 0 && col < width && row >= 0 && row < height && (i != 0 || j != 0)){
+            mineCount += at(col, row).isMine;
+          }
+        }
+      }
+      field[(y * width + x)].surrounding = mineCount;
+    }
+  }
 }
