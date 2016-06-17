@@ -27,12 +27,14 @@ public:
   void setOpen(int x, int y);
   void toggleFlag(int x, int y, std::string name);
   int getSurroundingMines(int x, int y);
+  bool onlyMinesLeft();
   friend std::ostream& operator << (std::ostream& stream, const Field& board);
 private:
   Tile *field;
   int height;
   int width;
   int mines;
+  int openTiles;
   void initializeMineCount();
   const Tile& at(int x, int y) const;
 };

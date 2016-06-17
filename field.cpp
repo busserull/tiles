@@ -7,7 +7,7 @@ Field::Field() : height(0), width(0), mines(0) {
 }
 
 Field::Field(int height, int width, int mines)
-: height(height), width(width), mines(mines) {
+: height(height), width(width), mines(mines), openTiles(0) {
   field = new Tile[(height * width)];
   for(int i = 0; i < (height * width); i++){
     field[i].isOpen = false;
@@ -99,10 +99,12 @@ std::string Field::getFlagger(int x, int y) const{
 
 void Field::toggleOpen(int x, int y){
   field[(y * width + x)].isOpen = !field[(y * width + x)].isOpen;
+  // Does not count openTiles
 }
 
 void Field::setOpen(int x, int y){
   field[(y * width + x)].isOpen = true;
+  openTiles++;
 }
 
 void Field::toggleFlag(int x, int y, std::string name){
@@ -112,6 +114,10 @@ void Field::toggleFlag(int x, int y, std::string name){
 
 int Field::getSurroundingMines(int x, int y){
   return field[(y * width + x)].surrounding;
+}
+
+bool Field::onlyMinesLeft(){
+  return (height * width - openTiles == mines);
 }
 
 std::ostream& operator << (std::ostream& stream, const Field& board){
