@@ -23,6 +23,7 @@ public:
   bool isFlagged(int x, int y) const;
   std::string getFlagger(int x, int y) const;
   void toggleOpen(int x, int y);
+  void setOpen(int x, int y);
   void toggleFlag(int x, int y, std::string name);
   int getSurroundingMines(int x, int y);
   friend std::ostream& operator << (std::ostream& stream, const Field& board);

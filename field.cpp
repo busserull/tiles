@@ -100,6 +100,10 @@ void Field::toggleOpen(int x, int y){
   field[(y * width + x)].isOpen = !field[(y * width + x)].isOpen;
 }
 
+void Field::setOpen(int x, int y){
+  field[(y * width + x)].isOpen = true;
+}
+
 void Field::toggleFlag(int x, int y, std::string name){
   field[(y * width + x)].isFlagged = !field[(y * width + x)].isFlagged;
   field[(y * width + x)].flagger = name;
