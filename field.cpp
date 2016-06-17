@@ -88,6 +88,14 @@ bool Field::isMine(int x, int y) const{
   return field[(y * width + x)].isMine;
 }
 
+bool Field::isFlagged(int x, int y) const{
+  return field[(y * width + x)].isFlagged;
+}
+
+std::string Field::getFlagger(int x, int y) const{
+  return field[(y * width + x)].flagger;
+}
+
 void Field::toggleOpen(int x, int y){
   field[(y * width + x)].isOpen = !field[(y * width + x)].isOpen;
 }

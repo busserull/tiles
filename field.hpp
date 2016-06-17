@@ -20,6 +20,8 @@ public:
   void placeMines(int openX, int openY);
   bool isOpen(int x, int y) const;
   bool isMine(int x, int y) const;
+  bool isFlagged(int x, int y) const;
+  std::string getFlagger(int x, int y) const;
   void toggleOpen(int x, int y);
   void toggleFlag(int x, int y, std::string name);
   friend std::ostream& operator << (std::ostream& stream, const Field& board);
