@@ -3,9 +3,9 @@
 #include "guigame.hpp"
 
 namespace{
-  const int height = 10; //Y mines
-  const int width = 15; //X mines
-  const int mines = 141; //Mines placed in total
+  const int height = 5; //Y mines
+  const int width = 5; //X mines
+  const int mines = 3; //Mines placed in total
 }
 
 int main(){
@@ -14,6 +14,7 @@ int main(){
     game.getEvent();
     //std::cout << game;
     game.display();
+    game.updateTitle();
   }
   return 0;
 }

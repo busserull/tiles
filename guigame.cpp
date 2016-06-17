@@ -15,7 +15,7 @@ namespace{
   const sf::Color mine_color(255, 81, 89);
   const sf::Color flag_color(255, 205, 70);
   const sf::Color number_colors[9] = {
-    sf::Color(0, 0, 0),       // x
+    sf::Color(0, 0, 0),       // 0
     sf::Color(89, 124, 255),  // 1
     sf::Color(182, 228, 109), // 2
     sf::Color(255, 81, 89),   // 3
@@ -51,7 +51,7 @@ void GuiGame::getEvent(){
     switch(event.type){
       case sf::Event::EventType::MouseButtonPressed:
         clickAt(event.mouseButton.x, event.mouseButton.y, event.mouseButton.button);
-        changed = true; ///
+        //changed = true; // For operator <<
         break;
       case sf::Event::EventType::KeyPressed:
         switch(event.key.code){
@@ -83,6 +83,25 @@ void GuiGame::display(){
   window->display();
 }
 
+void GuiGame::updateTitle(){
+  std::string title;
+  switch(state){
+    case Gamestate::Won:
+      title = "Won";
+      break;
+    case Gamestate::Lost:
+      title = "Lost";
+      break;
+    case Gamestate::Playing:
+      title = "Playing";
+      break;
+    case Gamestate::Pending:
+      title = "Pending";
+      break;
+  }
+  window->setTitle(title);
+}
+
 Gamestate GuiGame::getState(){
   return Gamestate::Pending;
 }
@@ -94,10 +113,20 @@ void GuiGame::clickAt(int x, int y, sf::Mouse::Button button){
   y = height - y - 1;
   x /= tile_size;
   if(button == sf::Mouse::Button::Left){
-    field.toggleOpen(x, y);
-    if(state == Gamestate::Pending){
-      field.placeMines(x, y);
-      state = Gamestate::Playing;
+    if(field.isFlagged(x, y) == false){
+      field.setOpen(x, y);
+      if(state == Gamestate::Pending){
+        field.placeMines(x, y);
+        state = Gamestate::Playing;
+      }
+      else if(state == Gamestate::Playing){
+        if(field.isMine(x, y)){
+          state = Gamestate::Lost;
+        }
+        else if(field.onlyMinesLeft()){
+          state = Gamestate::Won;
+        }
+      }
     }
   }
   else if(button == sf::Mouse::Button::Right){
@@ -117,13 +146,21 @@ void GuiGame::drawLabel(int x, int y){
       label.setColor(mine_color);
     }
     else{
-
+      int mines = field.getSurroundingMines(x, y);
+      label.setString(std::to_string(mines));
+      label.setColor(number_colors[mines]);
+      if(mines == 0){
+        needToDraw = false;
+      }
     }
   }
   else{                               // tile closed
     if(field.isFlagged(x, y)){
       label.setString("F");
       label.setColor(flag_color);
+    }
+    else{
+      needToDraw = false;
     }
   }
   sf::FloatRect labBox = label.getLocalBounds();
@@ -134,6 +171,7 @@ void GuiGame::drawLabel(int x, int y){
   }
 }
 
+/*
 std::ostream& operator << (std::ostream& stream, GuiGame& object){
   if(object.changed){
     stream << object.field << std::endl;
@@ -141,3 +179,4 @@ std::ostream& operator << (std::ostream& stream, GuiGame& object){
   }
   return stream;
 }
+*/

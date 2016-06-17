@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include "field.hpp"
 
-#include <ostream> ///
+//#include <ostream> // For operator <<
 
 enum class Gamestate{
   Won, Lost, Playing, Pending
@@ -16,10 +16,11 @@ public:
   bool isOpen() const;
   void getEvent();
   void display();
+  void updateTitle();
   Gamestate getState();
-  friend std::ostream& operator << (std::ostream& stream, GuiGame& object); ///
+  //friend std::ostream& operator << (std::ostream& stream, GuiGame& object); ///
 private:
-  bool changed; ///
+  //bool changed; // For operator <<
   void clickAt(int x, int y, sf::Mouse::Button button);
   void drawLabel(int x, int y);
   int height;
