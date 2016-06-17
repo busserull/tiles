@@ -24,6 +24,7 @@ public:
   std::string getFlagger(int x, int y) const;
   void toggleOpen(int x, int y);
   void toggleFlag(int x, int y, std::string name);
+  int getSurroundingMines(int x, int y);
   friend std::ostream& operator << (std::ostream& stream, const Field& board);
 private:
   Tile *field;

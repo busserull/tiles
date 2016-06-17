@@ -105,6 +105,20 @@ void Field::toggleFlag(int x, int y, std::string name){
   field[(y * width + x)].flagger = name;
 }
 
+int Field::getSurroundingMines(int x, int y){
+  int mines = 0;
+  for(int i = -1; i <= 1; i++){
+    for(int j = -1; j <= 1; j++){
+      int col = x + i;
+      int row = y + j;
+      if(col >= 0 && col < width && row >= 0 && row < height && (i != 0 || j != 0)){
+        mines += at(col, row).isMine;
+      }
+    }
+  }
+  return mines;
+}
+
 std::ostream& operator << (std::ostream& stream, const Field& board){
   for(int y = board.height - 1; y >= 0; y--){
     for(int x = 0; x < board.width; x++){
