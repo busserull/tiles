@@ -3,8 +3,10 @@
 #include <SFML/Graphics.hpp>
 #include "field.hpp"
 
+#include <ostream> ///
+
 enum class Gamestate{
-  WON, LOST, WAITING, INVALID
+  Won, Lost, Playing, Pending
 };
 
 class GuiGame{
@@ -15,11 +17,15 @@ public:
   void getEvent();
   void display();
   Gamestate getState();
+  friend std::ostream& operator << (std::ostream& stream, GuiGame& object); ///
 private:
+  bool changed; ///
+  void clickAt(int x, int y, sf::Mouse::Button button);
+  void drawLabel(int x, int y);
   int height;
   int width;
-  int counter; // getEvent simulation
   Field field;
+  Gamestate state;
   sf::Font font;
   sf::RenderWindow *window;
 };
