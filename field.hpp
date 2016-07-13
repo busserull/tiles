@@ -27,7 +27,9 @@ public:
   void setOpen(int x, int y);
   void toggleFlag(int x, int y, std::string name);
   int getSurroundingMines(int x, int y);
-  bool onlyMinesLeft();
+  bool onlyMinesLeft() const;
+  bool hasMinesBeenPlaced() const;
+  bool hasMinesBeenOpened() const;
   friend std::ostream& operator << (std::ostream& stream, const Field& board);
 private:
   Tile *field;
@@ -36,6 +38,7 @@ private:
   int mines;
   int openTiles;
   bool minesPlaced;
+  bool minesOpened;
   void initializeMineCount();
   const Tile& at(int x, int y) const;
   void flushSurrounding(int x, int y);

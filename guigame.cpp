@@ -62,6 +62,27 @@ void GuiGame::getEvent(){
   }
 }
 
+void GuiGame::updateGameState(){
+  if(field.hasMinesBeenPlaced() == false){
+    state = Gamestate::Pending;
+  }
+  else{
+    if(field.hasMinesBeenOpened()){
+      state = Gamestate::Lost;
+    }
+    else if(field.onlyMinesLeft()){
+      state = Gamestate::Won;
+    }
+    else{
+      state = Gamestate::Playing;
+    }
+  }
+}
+
+Gamestate GuiGame::getState() const {
+  return state;
+}
+
 void GuiGame::display(){
   window->clear();
   for(int x = 0; x < width; x++){
@@ -84,6 +105,7 @@ void GuiGame::display(){
 }
 
 void GuiGame::updateTitle(){
+  updateGameState();
   std::string title;
   switch(state){
     case Gamestate::Won:
@@ -102,10 +124,6 @@ void GuiGame::updateTitle(){
   window->setTitle(title);
 }
 
-Gamestate GuiGame::getState(){
-  return Gamestate::Pending;
-}
-
 void GuiGame::clickAt(int x, int y, sf::Mouse::Button button){
   x -= border_size;
   y -= border_size;
@@ -115,18 +133,6 @@ void GuiGame::clickAt(int x, int y, sf::Mouse::Button button){
   if(button == sf::Mouse::Button::Left){
     if(field.isFlagged(x, y) == false){
       field.setOpen(x, y);
-      if(state == Gamestate::Pending){
-        field.placeMines(x, y);
-        state = Gamestate::Playing;
-      }
-      else if(state == Gamestate::Playing){
-        if(field.isMine(x, y)){
-          state = Gamestate::Lost;
-        }
-        else if(field.onlyMinesLeft()){
-          state = Gamestate::Won;
-        }
-      }
     }
   }
   else if(button == sf::Mouse::Button::Right){

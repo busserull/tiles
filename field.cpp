@@ -2,12 +2,12 @@
 #include "utilities.hpp"
 #include <stdexcept>
 
-Field::Field() : height(0), width(0), mines(0), openTiles(0), minesPlaced(false) {
+Field::Field() : height(0), width(0), mines(0), openTiles(0), minesPlaced(false), minesOpened(false) {
   field = nullptr;
 }
 
 Field::Field(int height, int width, int mines)
-: height(height), width(width), mines(mines), openTiles(0), minesPlaced(false) {
+: height(height), width(width), mines(mines), openTiles(0), minesPlaced(false), minesOpened(false) {
   field = new Tile[(height * width)];
   for(int i = 0; i < (height * width); i++){
     field[i].isOpen = false;
@@ -104,6 +104,8 @@ std::string Field::getFlagger(int x, int y) const{
 void Field::toggleOpen(int x, int y){
   field[(y * width + x)].isOpen = !field[(y * width + x)].isOpen;
   // Does not count openTiles
+  // Does not place mines if board is uninitialized
+  // Does not check if tile is mine
 }
 
 void Field::setOpen(int x, int y){
@@ -111,10 +113,14 @@ void Field::setOpen(int x, int y){
     placeMines(x, y);
     minesPlaced = true;
   }
-  if(field[(y * width + x)].isOpen == false){
+  int index = y * width + x;
+  if(field[index].isOpen == false){
     openTiles++;
   }
-  field[(y * width + x)].isOpen = true;
+  field[index].isOpen = true;
+  if(field[index].isMine){
+    minesOpened = true;
+  }
   if(isMine(x,y) == false && getSurroundingMines(x, y) == 0){
     flushSurrounding(x, y);
   }
@@ -129,8 +135,16 @@ int Field::getSurroundingMines(int x, int y){
   return field[(y * width + x)].surrounding;
 }
 
-bool Field::onlyMinesLeft(){
+bool Field::onlyMinesLeft() const {
   return (height * width - openTiles == mines);
+}
+
+bool Field::hasMinesBeenPlaced() const {
+  return minesPlaced;
+}
+
+bool Field::hasMinesBeenOpened() const {
+  return minesOpened;
 }
 
 std::ostream& operator << (std::ostream& stream, const Field& board){

@@ -15,9 +15,10 @@ public:
   ~GuiGame();
   bool isOpen() const;
   void getEvent();
+  void updateGameState();
+  Gamestate getState() const;
   void display();
   void updateTitle();
-  Gamestate getState();
   //friend std::ostream& operator << (std::ostream& stream, GuiGame& object); ///
 private:
   //bool changed; // For operator <<
