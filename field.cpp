@@ -2,12 +2,12 @@
 #include "utilities.hpp"
 #include <stdexcept>
 
-Field::Field() : height(0), width(0), mines(0) {
+Field::Field() : height(0), width(0), mines(0), openTiles(0), minesPlaced(false) {
   field = nullptr;
 }
 
 Field::Field(int height, int width, int mines)
-: height(height), width(width), mines(mines), openTiles(0) {
+: height(height), width(width), mines(mines), openTiles(0), minesPlaced(false) {
   field = new Tile[(height * width)];
   for(int i = 0; i < (height * width); i++){
     field[i].isOpen = false;
@@ -20,6 +20,8 @@ Field::Field(const Field& other){
   height = other.height;
   width = other.width;
   mines = other.mines;
+  openTiles = other.openTiles;
+  minesPlaced = other.minesPlaced;
   field = new Tile[(height * width)];
   for(int i = 0; i < (height * width); i++){
     field[i] = other.field[i];
@@ -31,9 +33,11 @@ Field& Field::operator = (const Field& rhs){
     return (*this);
   }
   delete[] field;
-  mines = rhs.mines;
-  width = rhs.width;
   height = rhs.height;
+  width = rhs.width;
+  mines = rhs.mines;
+  openTiles = rhs.openTiles;
+  minesPlaced = rhs.minesPlaced;
   field = new Tile[(height * width)];
   for(int i = 0; i < (height * width); i++){
     field[i] = rhs.field[i];
@@ -103,8 +107,17 @@ void Field::toggleOpen(int x, int y){
 }
 
 void Field::setOpen(int x, int y){
+  if(minesPlaced == false){
+    placeMines(x, y);
+    minesPlaced = true;
+  }
+  if(field[(y * width + x)].isOpen == false){
+    openTiles++;
+  }
   field[(y * width + x)].isOpen = true;
-  openTiles++;
+  if(isMine(x,y) == false && getSurroundingMines(x, y) == 0){
+    flushSurrounding(x, y);
+  }
 }
 
 void Field::toggleFlag(int x, int y, std::string name){
@@ -141,10 +154,6 @@ std::ostream& operator << (std::ostream& stream, const Field& board){
   return stream;
 }
 
-const Tile& Field::at(int x, int y) const{
-  return field[(y * width + x)];
-}
-
 void Field::initializeMineCount(){
   for(int x = 0; x < width; x++){
     for(int y = 0; y < height; y++){
@@ -161,4 +170,33 @@ void Field::initializeMineCount(){
       field[(y * width + x)].surrounding = mineCount;
     }
   }
+}
+
+const Tile& Field::at(int x, int y) const{
+  return field[(y * width + x)];
+}
+
+void Field::flushSurrounding(int x, int y){
+  for(int i = -1; i <= 1; i++){
+    for(int j = -1; j <= 1; j++){
+      int nx = x + i;
+      int ny = y + j;
+      if(onBoard(nx, ny) && isOpen(nx, ny) == false){
+        int index = ny * width + nx;
+        field[index].isFlagged = false;
+        field[index].isOpen = true;
+        openTiles++;
+        if(getSurroundingMines(nx, ny) == 0){
+          flushSurrounding(nx, ny);
+        }
+      }
+    }
+  }
+}
+
+bool Field::onBoard(int x, int y) const {
+  if(x >= 0 && x < width && y >= 0 && y < height){
+    return true;
+  }
+  return false;
 }

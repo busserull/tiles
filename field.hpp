@@ -35,8 +35,11 @@ private:
   int width;
   int mines;
   int openTiles;
+  bool minesPlaced;
   void initializeMineCount();
   const Tile& at(int x, int y) const;
+  void flushSurrounding(int x, int y);
+  bool onBoard(int x, int y) const;
 };
 
 #endif
