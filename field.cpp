@@ -131,6 +131,11 @@ void Field::setOpen(int x, int y){
     minesOpened = true;
     endTime = time(nullptr);
     endTimeSet = true;
+    for(int i = 0; i < height * width; i++){
+      if(field[i].isMine){
+        field[i].isOpen = true;
+      }
+    }
   }
   if(isMine(x,y) == false && getSurroundingMines(x, y) == 0){
     flushSurrounding(x, y);
