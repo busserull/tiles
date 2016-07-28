@@ -126,6 +126,13 @@ void Field::setOpen(int x, int y){
   if(isMine(x,y) == false && getSurroundingMines(x, y) == 0){
     flushSurrounding(x, y);
   }
+  if(onlyMinesLeft()){
+    for(int i = 0; i < height * width; i++){
+      if(field[i].isMine){
+        field[i].isFlagged = true;
+      }
+    }
+  }
 }
 
 void Field::toggleFlag(int x, int y, std::string name){
