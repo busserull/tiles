@@ -6,6 +6,7 @@ namespace{
   const int border_size = 2;
   const int side_bar_width = tile_size * 4;
 
+  const sf::Color side_bar_color(182, 228, 109);
   const sf::Color open_tile_color(120, 120, 120);
   const sf::Color closed_tile_color(50, 50, 50);
   const sf::Color mine_color(255, 81, 89);
@@ -110,7 +111,7 @@ void GuiGame::display(){
 
     sf::RectangleShape separator;
     separator.setSize(sf::Vector2f(side_bar_width - 10 * border_size, border_size / 2));
-    separator.setFillColor(open_tile_color);
+    separator.setFillColor(side_bar_color);
     separator.setPosition(width * tile_size + 5 * border_size, border_size);
     int distance = height * tile_size / 3;
     separator.move(0, distance);
@@ -140,7 +141,7 @@ void GuiGame::display(){
     stateLabel.setCharacterSize(height * tile_size / 4);
     stateLabel.setStyle(sf::Text::Bold);
     stateLabel.setString(indicatorStr);
-    stateLabel.setColor(flag_color); // Change with state?
+    stateLabel.setColor(side_bar_color); // Change with state?
     sf::FloatRect boundingBox = stateLabel.getLocalBounds();
     stateLabel.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top + boundingBox.height / 2);
     stateLabel.setPosition(width * tile_size + side_bar_width / 2, height * tile_size / 6);
@@ -149,7 +150,6 @@ void GuiGame::display(){
     if(state == Gamestate::Won){
       sf::Vector2f position = stateLabel.getPosition();
       stateLabel.setString("  D");
-      //stateLabel.setStyle(sf::Text::Regular);
       stateLabel.setCharacterSize(height * tile_size / 6);
       boundingBox = stateLabel.getLocalBounds();
       stateLabel.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top + boundingBox.height / 2);
@@ -187,7 +187,7 @@ void GuiGame::display(){
     timeLabel.setCharacterSize(height * tile_size / 16);
     timeLabel.setStyle(sf::Text::Bold);
     timeLabel.setString(minString + ":" + secString); ///
-    timeLabel.setColor(flag_color); ///
+    timeLabel.setColor(side_bar_color); ///
     sf::FloatRect boundingBox = timeLabel.getLocalBounds();
     timeLabel.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top + boundingBox.height / 2);
     timeLabel.setPosition(width * tile_size + side_bar_width / 2, height * tile_size / 2);
@@ -205,7 +205,7 @@ void GuiGame::display(){
     else{
       mineLabel.setString(std::to_string(mines - flagsPlaced));
     }
-    mineLabel.setColor(flag_color);
+    mineLabel.setColor(side_bar_color);
     sf::FloatRect boundingBox = mineLabel.getLocalBounds();
     mineLabel.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top + boundingBox.height / 2);
     mineLabel.setPosition(width * tile_size + side_bar_width / 2, height * tile_size * 5 / 6);
@@ -222,7 +222,7 @@ void GuiGame::display(){
     else{
       minesOrFlags.setString("left");
     }
-    minesOrFlags.setColor(flag_color);
+    minesOrFlags.setColor(side_bar_color);
     boundingBox = minesOrFlags.getLocalBounds();
     minesOrFlags.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top);
     minesOrFlags.setPosition(width * tile_size + side_bar_width / 2, labelOffset);
@@ -254,25 +254,27 @@ void GuiGame::updateTitle(){
 
 void GuiGame::clickAt(int x, int y, sf::Mouse::Button button){
   if(x < width * tile_size + border_size){ // Clicked on tile field
-    x -= border_size;
-    y -= border_size;
-    y /= tile_size;
-    y = height - y - 1;
-    x /= tile_size;
-    if(button == sf::Mouse::Button::Left){ // Open
-      if(field.isFlagged(x, y) == false){
-        field.setOpen(x, y);
+    if(state != Gamestate::Won && state != Gamestate::Lost){
+      x -= border_size;
+      y -= border_size;
+      y /= tile_size;
+      y = height - y - 1;
+      x /= tile_size;
+      if(button == sf::Mouse::Button::Left){ // Open
+        if(field.isFlagged(x, y) == false){
+          field.setOpen(x, y);
+        }
       }
-    }
-    else if(button == sf::Mouse::Button::Right){ // Flag
-      if(field.isFlagged(x, y)){
-        flagsPlaced--;
-        field.toggleFlag(x, y, "Babbage");
-      }
-      else{
-        if(flagsPlaced < mines && !field.isOpen(x, y)){
-          flagsPlaced++;
+      else if(button == sf::Mouse::Button::Right){ // Flag
+        if(field.isFlagged(x, y)){
+          flagsPlaced--;
           field.toggleFlag(x, y, "Babbage");
+        }
+        else{
+          if(flagsPlaced < mines && !field.isOpen(x, y)){
+            flagsPlaced++;
+            field.toggleFlag(x, y, "Babbage");
+          }
         }
       }
     }
