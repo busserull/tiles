@@ -1,11 +1,6 @@
 #include "guigame.hpp"
 #include <stdexcept>
 
-#include <chrono>
-#include <thread>
-#include <cstdlib>
-#include <iostream>
-
 namespace{
   const int tile_size = 40;
   const int border_size = 2;
