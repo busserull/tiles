@@ -43,6 +43,7 @@ private:
   bool minesOpened;
   time_t startTime;
   time_t endTime;
+  bool endTimeSet;
   void initializeMineCount();
   const Tile& at(int x, int y) const;
   void flushSurrounding(int x, int y);

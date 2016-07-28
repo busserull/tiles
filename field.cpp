@@ -2,12 +2,12 @@
 #include "utilities.hpp"
 #include <stdexcept>
 
-Field::Field() : height(0), width(0), mines(0), openTiles(0), minesPlaced(false), minesOpened(false) {
+Field::Field() : height(0), width(0), mines(0), openTiles(0), minesPlaced(false), minesOpened(false), endTimeSet(false) {
   field = nullptr;
 }
 
 Field::Field(int height, int width, int mines)
-: height(height), width(width), mines(mines), openTiles(0), minesPlaced(false), minesOpened(false) {
+: height(height), width(width), mines(mines), openTiles(0), minesPlaced(false), minesOpened(false), endTimeSet(false) {
   field = new Tile[(height * width)];
   for(int i = 0; i < (height * width); i++){
     field[i].isOpen = false;
@@ -25,6 +25,7 @@ Field::Field(const Field& other){
   minesOpened = other.minesOpened;
   startTime = other.startTime;
   endTime = other.endTime;
+  endTimeSet = other.endTimeSet;
   field = new Tile[(height * width)];
   for(int i = 0; i < (height * width); i++){
     field[i] = other.field[i];
@@ -44,6 +45,7 @@ Field& Field::operator = (const Field& rhs){
   minesOpened = rhs.minesOpened;
   startTime = rhs.startTime;
   endTime = rhs.endTime;
+  endTimeSet = rhs.endTimeSet;
   field = new Tile[(height * width)];
   for(int i = 0; i < (height * width); i++){
     field[i] = rhs.field[i];
@@ -117,7 +119,6 @@ void Field::toggleOpen(int x, int y){
 void Field::setOpen(int x, int y){
   if(minesPlaced == false){
     startTime = time(nullptr);
-    endTime = startTime;
     placeMines(x, y);
     minesPlaced = true;
   }
@@ -129,12 +130,14 @@ void Field::setOpen(int x, int y){
   if(field[index].isMine){
     minesOpened = true;
     endTime = time(nullptr);
+    endTimeSet = true;
   }
   if(isMine(x,y) == false && getSurroundingMines(x, y) == 0){
     flushSurrounding(x, y);
   }
   if(onlyMinesLeft()){
     endTime = time(nullptr);
+    endTimeSet = true;
     for(int i = 0; i < height * width; i++){
       if(field[i].isMine){
         field[i].isFlagged = true;
@@ -165,7 +168,7 @@ bool Field::hasMinesBeenOpened() const {
 }
 
 int Field::getSecondsSinceStart() const {
-  if(startTime == endTime){
+  if(!endTimeSet){
     return difftime(time(nullptr), startTime);
   }
   else{

@@ -123,16 +123,16 @@ void GuiGame::display(){
     std::string indicatorStr;
     switch(state){
       case Gamestate::Won:
-        indicatorStr = "I";
+        indicatorStr = ": ";
         break;
       case Gamestate::Lost:
-        indicatorStr = "I";
+        indicatorStr = ":(";
         break;
       case Gamestate::Playing:
-        indicatorStr = "I";
+        indicatorStr = ":)";
         break;
       case Gamestate::Pending:
-        indicatorStr = "I";
+        indicatorStr = ":|";
         break;
     }
     sf::Text stateLabel;
@@ -144,7 +144,19 @@ void GuiGame::display(){
     sf::FloatRect boundingBox = stateLabel.getLocalBounds();
     stateLabel.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top + boundingBox.height / 2);
     stateLabel.setPosition(width * tile_size + side_bar_width / 2, height * tile_size / 6);
+    stateLabel.setRotation(90);
     window->draw(stateLabel);
+    if(state == Gamestate::Won){
+      sf::Vector2f position = stateLabel.getPosition();
+      stateLabel.setString("  D");
+      //stateLabel.setStyle(sf::Text::Regular);
+      stateLabel.setCharacterSize(height * tile_size / 6);
+      boundingBox = stateLabel.getLocalBounds();
+      stateLabel.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top + boundingBox.height / 2);
+      stateLabel.setPosition(position);
+      stateLabel.scale(0.8, 1.5);
+      window->draw(stateLabel);
+    }
   }
   // Start drawing time
   {
