@@ -23,6 +23,8 @@ Field::Field(const Field& other){
   openTiles = other.openTiles;
   minesPlaced = other.minesPlaced;
   minesOpened = other.minesOpened;
+  startTime = other.startTime;
+  endTime = other.endTime;
   field = new Tile[(height * width)];
   for(int i = 0; i < (height * width); i++){
     field[i] = other.field[i];
@@ -40,6 +42,8 @@ Field& Field::operator = (const Field& rhs){
   openTiles = rhs.openTiles;
   minesPlaced = rhs.minesPlaced;
   minesOpened = rhs.minesOpened;
+  startTime = rhs.startTime;
+  endTime = rhs.endTime;
   field = new Tile[(height * width)];
   for(int i = 0; i < (height * width); i++){
     field[i] = rhs.field[i];
@@ -112,6 +116,8 @@ void Field::toggleOpen(int x, int y){
 
 void Field::setOpen(int x, int y){
   if(minesPlaced == false){
+    startTime = time(nullptr);
+    endTime = startTime;
     placeMines(x, y);
     minesPlaced = true;
   }
@@ -122,11 +128,13 @@ void Field::setOpen(int x, int y){
   field[index].isOpen = true;
   if(field[index].isMine){
     minesOpened = true;
+    endTime = time(nullptr);
   }
   if(isMine(x,y) == false && getSurroundingMines(x, y) == 0){
     flushSurrounding(x, y);
   }
   if(onlyMinesLeft()){
+    endTime = time(nullptr);
     for(int i = 0; i < height * width; i++){
       if(field[i].isMine){
         field[i].isFlagged = true;
@@ -154,6 +162,15 @@ bool Field::hasMinesBeenPlaced() const {
 
 bool Field::hasMinesBeenOpened() const {
   return minesOpened;
+}
+
+int Field::getSecondsSinceStart() const {
+  if(startTime == endTime){
+    return difftime(time(nullptr), startTime);
+  }
+  else{
+    return difftime(endTime, startTime);
+  }
 }
 
 std::ostream& operator << (std::ostream& stream, const Field& board){

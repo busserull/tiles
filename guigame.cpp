@@ -148,11 +148,33 @@ void GuiGame::display(){
   }
   // Start drawing time
   {
+    std::string secString, minString;
+    if(state != Gamestate::Pending){
+      int seconds = field.getSecondsSinceStart();
+      int minutes = seconds / 60;
+      seconds %= 60;
+      if(minutes < 10){
+        minString.push_back('0');
+      }
+      minString += std::to_string(minutes);
+      if(seconds < 10){
+        secString.push_back('0');
+      }
+      secString += std::to_string(seconds);
+      if(minutes > 99){
+        minString = "99";
+        secString = "++";
+      }
+    }
+    else{
+      secString = "00";
+      minString = "00";
+    }
     sf::Text timeLabel;
     timeLabel.setFont(font);
-    timeLabel.setCharacterSize(height * tile_size / 4);
+    timeLabel.setCharacterSize(height * tile_size / 16);
     timeLabel.setStyle(sf::Text::Bold);
-    timeLabel.setString("T"); ///
+    timeLabel.setString(minString + ":" + secString); ///
     timeLabel.setColor(flag_color); ///
     sf::FloatRect boundingBox = timeLabel.getLocalBounds();
     timeLabel.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top + boundingBox.height / 2);

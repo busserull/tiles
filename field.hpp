@@ -2,6 +2,7 @@
 #define FIELD_HPP
 #include <string>
 #include <ostream>
+#include <ctime>
 
 struct Tile{
   bool isOpen;
@@ -30,6 +31,7 @@ public:
   bool onlyMinesLeft() const;
   bool hasMinesBeenPlaced() const;
   bool hasMinesBeenOpened() const;
+  int getSecondsSinceStart() const;
   friend std::ostream& operator << (std::ostream& stream, const Field& board);
 private:
   Tile *field;
@@ -39,6 +41,8 @@ private:
   int openTiles;
   bool minesPlaced;
   bool minesOpened;
+  time_t startTime;
+  time_t endTime;
   void initializeMineCount();
   const Tile& at(int x, int y) const;
   void flushSurrounding(int x, int y);
