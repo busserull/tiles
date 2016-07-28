@@ -9,6 +9,10 @@ enum class Gamestate{
   Won, Lost, Playing, Pending
 };
 
+enum class Playermode{
+  Singleplayer, Multiplayer
+};
+
 class GuiGame{
 public:
   GuiGame(int height, int width, int mines);
@@ -28,6 +32,7 @@ private:
   int width;
   Field field;
   Gamestate state;
+  Playermode mode;
   sf::Font font;
   sf::RenderWindow *window;
 };

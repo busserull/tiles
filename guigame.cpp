@@ -9,6 +9,7 @@
 namespace{
   const int tile_size = 40;
   const int border_size = 2;
+  const int side_bar_width = tile_size * 4;
 
   const sf::Color open_tile_color(120, 120, 120);
   const sf::Color closed_tile_color(50, 50, 50);
@@ -27,12 +28,12 @@ namespace{
   };
 }
 
-GuiGame::GuiGame(int height, int width, int mines) : height(height), width(width), state(Gamestate::Pending){
+GuiGame::GuiGame(int height, int width, int mines) : height(height), width(width), state(Gamestate::Pending), mode(Playermode::Singleplayer){
   field = Field(height, width, mines);
   if(!font.loadFromFile("sansation.ttf")){
     throw std::runtime_error("Could not load sansation.ttf");
   }
-  window = new sf::RenderWindow(sf::VideoMode(width * tile_size + border_size, height * tile_size + border_size),
+  window = new sf::RenderWindow(sf::VideoMode(width * tile_size + border_size + side_bar_width, height * tile_size + border_size),
   "This is a nice window", sf::Style::Titlebar);
 }
 
@@ -85,6 +86,7 @@ Gamestate GuiGame::getState() const {
 
 void GuiGame::display(){
   window->clear();
+  // Start drawing tiles
   for(int x = 0; x < width; x++){
     for(int y = 0; y < height; y++){
       int tileX = tile_size * x + border_size;
@@ -101,6 +103,81 @@ void GuiGame::display(){
       drawLabel(x, y);
     }
   }
+  // Stop drawing tiles
+  
+  // Start drawing sidebar
+  {
+    sf::RectangleShape sidepane;
+    sidepane.setSize(sf::Vector2f(side_bar_width - border_size, height * tile_size - border_size));
+    sidepane.setFillColor(closed_tile_color);
+    sidepane.setPosition(width * tile_size + border_size, border_size);
+    window->draw(sidepane);
+
+    sf::RectangleShape separator;
+    separator.setSize(sf::Vector2f(side_bar_width - 10 * border_size, border_size / 2));
+    separator.setFillColor(open_tile_color);
+    separator.setPosition(width * tile_size + 5 * border_size, border_size);
+    int distance = height * tile_size / 3;
+    separator.move(0, distance);
+    window->draw(separator);
+    separator.move(0, distance);
+    window->draw(separator);
+  }
+  // Start drawing indicator
+  {
+    std::string indicatorStr;
+    switch(state){
+      case Gamestate::Won:
+        indicatorStr = "I";
+        break;
+      case Gamestate::Lost:
+        indicatorStr = "I";
+        break;
+      case Gamestate::Playing:
+        indicatorStr = "I";
+        break;
+      case Gamestate::Pending:
+        indicatorStr = "I";
+        break;
+    }
+    sf::Text stateLabel;
+    stateLabel.setFont(font);
+    stateLabel.setCharacterSize(height * tile_size / 4);
+    stateLabel.setStyle(sf::Text::Bold);
+    stateLabel.setString(indicatorStr);
+    stateLabel.setColor(flag_color); // Change with state?
+    sf::FloatRect boundingBox = stateLabel.getLocalBounds();
+    stateLabel.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top + boundingBox.height / 2);
+    stateLabel.setPosition(width * tile_size + side_bar_width / 2, height * tile_size / 6);
+    window->draw(stateLabel);
+  }
+  // Start drawing time
+  {
+    sf::Text timeLabel;
+    timeLabel.setFont(font);
+    timeLabel.setCharacterSize(height * tile_size / 4);
+    timeLabel.setStyle(sf::Text::Bold);
+    timeLabel.setString("T"); ///
+    timeLabel.setColor(flag_color); ///
+    sf::FloatRect boundingBox = timeLabel.getLocalBounds();
+    timeLabel.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top + boundingBox.height / 2);
+    timeLabel.setPosition(width * tile_size + side_bar_width / 2, height * tile_size / 2);
+    window->draw(timeLabel);
+  }
+  // Start drawing minecounter
+  {
+    sf::Text mineLabel;
+    mineLabel.setFont(font);
+    mineLabel.setCharacterSize(height * tile_size / 4);
+    mineLabel.setStyle(sf::Text::Bold);
+    mineLabel.setString("M");
+    mineLabel.setColor(flag_color);
+    sf::FloatRect boundingBox = mineLabel.getLocalBounds();
+    mineLabel.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top + boundingBox.height / 2);
+    mineLabel.setPosition(width * tile_size + side_bar_width / 2, height * tile_size * 5 / 6);
+    window->draw(mineLabel);
+  }
+  // Stop drawing sidebar
   window->display();
 }
 
@@ -125,18 +202,23 @@ void GuiGame::updateTitle(){
 }
 
 void GuiGame::clickAt(int x, int y, sf::Mouse::Button button){
-  x -= border_size;
-  y -= border_size;
-  y /= tile_size;
-  y = height - y - 1;
-  x /= tile_size;
-  if(button == sf::Mouse::Button::Left){
-    if(field.isFlagged(x, y) == false){
-      field.setOpen(x, y);
+  if(x < width * tile_size + border_size){ // Clicked on tile field
+    x -= border_size;
+    y -= border_size;
+    y /= tile_size;
+    y = height - y - 1;
+    x /= tile_size;
+    if(button == sf::Mouse::Button::Left){
+      if(field.isFlagged(x, y) == false){
+        field.setOpen(x, y);
+      }
+    }
+    else if(button == sf::Mouse::Button::Right){
+      field.toggleFlag(x, y, "Babbage");
     }
   }
-  else if(button == sf::Mouse::Button::Right){
-    field.toggleFlag(x, y, "Babbage");
+  else{
+    ; ///
   }
 }
 
