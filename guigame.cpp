@@ -1,5 +1,7 @@
 #include "guigame.hpp"
 #include <stdexcept>
+#include <fstream>
+#include <iomanip>
 
 namespace{
   const int tile_size = 40;
@@ -23,7 +25,7 @@ namespace{
   };
 }
 
-GuiGame::GuiGame(int height, int width, int mines) : height(height), width(width), mines(mines), flagsPlaced(0), state(Gamestate::Pending), mode(Playermode::Singleplayer){
+GuiGame::GuiGame(int height, int width, int mines) : playerName("Babbage"), gameOutcomeRecorded(false), height(height), width(width), mines(mines), flagsPlaced(0), state(Gamestate::Pending), mode(Playermode::Singleplayer){
   field = Field(height, width, mines);
   if(!font.loadFromFile("sansation.ttf")){
     throw std::runtime_error("Could not load sansation.ttf");
@@ -65,9 +67,11 @@ void GuiGame::updateGameState(){
   else{
     if(field.hasMinesBeenOpened()){
       state = Gamestate::Lost;
+      recordStatistics();
     }
     else if(field.onlyMinesLeft()){
       state = Gamestate::Won;
+      recordStatistics();
     }
     else{
       state = Gamestate::Playing;
@@ -269,6 +273,7 @@ void GuiGame::clickAt(int x, int y, sf::Mouse::Button button){
     if(y <= height * tile_size / 3){ // Clicked on indicator field
       state = Gamestate::Pending;
       flagsPlaced = 0;
+      gameOutcomeRecorded = false;
       field = Field(height, width, mines);
     }
     else if(y > height * tile_size * 2 / 3){ // Clicked on minecounter
@@ -322,6 +327,53 @@ void GuiGame::drawLabel(int x, int y){
   if(needToDraw){
     window->draw(label);
   }
+}
+
+void GuiGame::recordStatistics(){
+  if(gameOutcomeRecorded){
+    return;
+  }
+  std::ofstream out(".gamerecord.txt", std::ios::app);
+  std::string playerNameOut;
+  if(playerName.length() > 15){
+    for(int i = 0; i < 12; i++){
+      playerNameOut.push_back(playerName[i]);
+    }
+    playerNameOut += "...";
+  }
+  else{
+    playerNameOut = playerName;
+  }
+  out << std::setw(15) << playerNameOut;
+  if(state == Gamestate::Won){
+    out << std::setw(9) << "won in ";
+  }
+  else{
+    out << std::setw(9) << "lost in ";
+  }
+  std::string secString, minString;
+  {
+    int seconds = field.getSecondsSinceStart();
+    int minutes = seconds / 60;
+    seconds %= 60;
+    if(minutes < 10){
+      minString.push_back('0');
+    }
+    minString += std::to_string(minutes);
+    if(seconds < 10){
+      secString.push_back('0');
+    }
+    secString += std::to_string(seconds);
+    if(minutes > 99){
+      minString = "99";
+      secString = "++";
+    }
+  }
+  out << minString << ":" << secString << " , the board was ";
+  out << std::setw(4) << width << " by " << std::setw(4) << height;
+  out << " and contained " << std::setw(4) << mines << " mines." << std::endl;
+  out.close();
+  gameOutcomeRecorded = true;
 }
 
 /*

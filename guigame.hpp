@@ -28,6 +28,9 @@ private:
   //bool changed; // For operator <<
   void clickAt(int x, int y, sf::Mouse::Button button);
   void drawLabel(int x, int y);
+  void recordStatistics();
+  std::string playerName;
+  bool gameOutcomeRecorded;
   int height;
   int width;
   int mines;
