@@ -7,6 +7,7 @@ namespace{
   const int side_bar_width = tile_size * 4;
 
   const sf::Color side_bar_color(182, 228, 109);
+  const sf::Color side_bar_mutable_color(99, 192, 242);
   const sf::Color open_tile_color(120, 120, 120);
   const sf::Color closed_tile_color(50, 50, 50);
   const sf::Color mine_color(255, 81, 89);
@@ -30,7 +31,7 @@ GuiGame::GuiGame(int height, int width, int mines) : height(height), width(width
     throw std::runtime_error("Could not load sansation.ttf");
   }
   window = new sf::RenderWindow(sf::VideoMode(width * tile_size + border_size + side_bar_width, height * tile_size + border_size),
-  "This is a nice window", sf::Style::Titlebar);
+  "Tiles", sf::Style::Titlebar);
 }
 
 GuiGame::~GuiGame(){
@@ -141,7 +142,7 @@ void GuiGame::display(){
     stateLabel.setCharacterSize(height * tile_size / 4);
     stateLabel.setStyle(sf::Text::Bold);
     stateLabel.setString(indicatorStr);
-    stateLabel.setColor(side_bar_color); // Change with state?
+    stateLabel.setColor(side_bar_color);
     sf::FloatRect boundingBox = stateLabel.getLocalBounds();
     stateLabel.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top + boundingBox.height / 2);
     stateLabel.setPosition(width * tile_size + side_bar_width / 2, height * tile_size / 6);
@@ -217,12 +218,17 @@ void GuiGame::display(){
     minesOrFlags.setFont(font);
     minesOrFlags.setCharacterSize(height * tile_size / 24);
     if(state != Gamestate::Playing){
-      minesOrFlags.setString("mines");
+      minesOrFlags.setColor(side_bar_mutable_color);
     }
     else{
-      minesOrFlags.setString("left");
+      minesOrFlags.setColor(side_bar_color);
     }
-    minesOrFlags.setColor(side_bar_color);
+    if(mines == 1){
+      minesOrFlags.setString("mine");
+    }
+    else{
+      minesOrFlags.setString("mines");
+    }
     boundingBox = minesOrFlags.getLocalBounds();
     minesOrFlags.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top);
     minesOrFlags.setPosition(width * tile_size + side_bar_width / 2, labelOffset);
@@ -288,10 +294,12 @@ void GuiGame::clickAt(int x, int y, sf::Mouse::Button button){
     else if(y > height * tile_size * 2 / 3){ // Clicked on minecounter
       if(state != Gamestate::Playing){ // Allow changing mines
         if(button == sf::Mouse::Button::Left){
-          mines++;
+          if(mines < width * height - 9)
+            mines++;
         }
         else{
-          mines--;
+          if(mines > 0)
+            mines--;
         }
       }
       if(state == Gamestate::Pending){
