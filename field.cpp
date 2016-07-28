@@ -22,6 +22,7 @@ Field::Field(const Field& other){
   mines = other.mines;
   openTiles = other.openTiles;
   minesPlaced = other.minesPlaced;
+  minesOpened = other.minesOpened;
   field = new Tile[(height * width)];
   for(int i = 0; i < (height * width); i++){
     field[i] = other.field[i];
@@ -38,6 +39,7 @@ Field& Field::operator = (const Field& rhs){
   mines = rhs.mines;
   openTiles = rhs.openTiles;
   minesPlaced = rhs.minesPlaced;
+  minesOpened = rhs.minesOpened;
   field = new Tile[(height * width)];
   for(int i = 0; i < (height * width); i++){
     field[i] = rhs.field[i];
