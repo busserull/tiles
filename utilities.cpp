@@ -1,5 +1,6 @@
 #include "utilities.hpp"
 #include <cstdlib>
+#include <ctime>
 
 namespace ut{
   int randInclusive(int lower, int upper){
@@ -8,6 +9,7 @@ namespace ut{
   }
 
   void shuffleArray(int *arr, int length){
+    srand(time(nullptr));
     int *i = (arr + length);
     while((i - arr) > 1){
       int index = randInclusive(0, (i - arr - 1));
