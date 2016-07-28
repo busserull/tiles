@@ -30,6 +30,8 @@ private:
   void drawLabel(int x, int y);
   int height;
   int width;
+  int mines;
+  int flagsPlaced;
   Field field;
   Gamestate state;
   Playermode mode;

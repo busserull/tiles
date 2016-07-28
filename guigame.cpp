@@ -28,7 +28,7 @@ namespace{
   };
 }
 
-GuiGame::GuiGame(int height, int width, int mines) : height(height), width(width), state(Gamestate::Pending), mode(Playermode::Singleplayer){
+GuiGame::GuiGame(int height, int width, int mines) : height(height), width(width), mines(mines), flagsPlaced(0), state(Gamestate::Pending), mode(Playermode::Singleplayer){
   field = Field(height, width, mines);
   if(!font.loadFromFile("sansation.ttf")){
     throw std::runtime_error("Could not load sansation.ttf");
@@ -104,7 +104,7 @@ void GuiGame::display(){
     }
   }
   // Stop drawing tiles
-  
+
   // Start drawing sidebar
   {
     sf::RectangleShape sidepane;
@@ -170,12 +170,34 @@ void GuiGame::display(){
     mineLabel.setFont(font);
     mineLabel.setCharacterSize(height * tile_size / 4);
     mineLabel.setStyle(sf::Text::Bold);
-    mineLabel.setString("M");
+    if(state != Gamestate::Playing){
+      mineLabel.setString(std::to_string(mines));
+    }
+    else{
+      mineLabel.setString(std::to_string(mines - flagsPlaced));
+    }
     mineLabel.setColor(flag_color);
     sf::FloatRect boundingBox = mineLabel.getLocalBounds();
     mineLabel.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top + boundingBox.height / 2);
     mineLabel.setPosition(width * tile_size + side_bar_width / 2, height * tile_size * 5 / 6);
     window->draw(mineLabel);
+
+    // Mines or Flags
+    int labelOffset = height * tile_size * 5 / 6 + boundingBox.height * 2 / 3;
+    sf::Text minesOrFlags;
+    minesOrFlags.setFont(font);
+    minesOrFlags.setCharacterSize(height * tile_size / 24);
+    if(state != Gamestate::Playing){
+      minesOrFlags.setString("mines");
+    }
+    else{
+      minesOrFlags.setString("left");
+    }
+    minesOrFlags.setColor(flag_color);
+    boundingBox = minesOrFlags.getLocalBounds();
+    minesOrFlags.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top);
+    minesOrFlags.setPosition(width * tile_size + side_bar_width / 2, labelOffset);
+    window->draw(minesOrFlags);
   }
   // Stop drawing sidebar
   window->display();
@@ -208,17 +230,43 @@ void GuiGame::clickAt(int x, int y, sf::Mouse::Button button){
     y /= tile_size;
     y = height - y - 1;
     x /= tile_size;
-    if(button == sf::Mouse::Button::Left){
+    if(button == sf::Mouse::Button::Left){ // Open
       if(field.isFlagged(x, y) == false){
         field.setOpen(x, y);
       }
     }
-    else if(button == sf::Mouse::Button::Right){
-      field.toggleFlag(x, y, "Babbage");
+    else if(button == sf::Mouse::Button::Right){ // Flag
+      if(field.isFlagged(x, y)){
+        flagsPlaced--;
+        field.toggleFlag(x, y, "Babbage");
+      }
+      else{
+        if(flagsPlaced < mines){
+          flagsPlaced++;
+          field.toggleFlag(x, y, "Babbage");
+        }
+      }
     }
   }
-  else{
-    ; ///
+  else{ // Clicked on sidebar
+    if(y <= height * tile_size / 3){ // Clicked on indicator field
+      state = Gamestate::Pending;
+      flagsPlaced = 0;
+      field = Field(height, width, mines);
+    }
+    else if(y > height * tile_size * 2 / 3){ // Clicked on minecounter
+      if(state != Gamestate::Playing){ // Allow changing mines
+        if(button == sf::Mouse::Button::Left){
+          mines++;
+        }
+        else{
+          mines--;
+        }
+      }
+      if(state == Gamestate::Pending){
+        field = Field(height, width, mines);
+      }
+    }
   }
 }
 
