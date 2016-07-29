@@ -35,7 +35,7 @@ public:
   bool hasMinesBeenPlaced() const;
   bool hasMinesBeenOpened() const;
   int getSecondsSinceStart() const;
-  void setTile(int x, int y, bool isOpen, bool isMine, bool isFlagged, std::string flagger, int surrounding);
+  void setTile(int x, int y, bool isOpen, bool isMine, bool isFlagged, std::string flagger);
   friend std::ostream& operator << (std::ostream& stream, const Field& board);
 private:
   void initializeMineCount();

@@ -2,9 +2,11 @@
 #define HOSTORCLIENT_HPP
 #include <SFML/System.hpp>
 #include <SFML/Network.hpp>
+#include "field.hpp"
 
 class HostOrClient{
 public:
+protected:
 private:
 
 };

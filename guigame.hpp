@@ -4,6 +4,7 @@
 #include <string>
 #include "field.hpp"
 #include "server.hpp"
+#include "client.hpp"
 
 //#include <ostream> // For operator <<
 
@@ -44,7 +45,7 @@ private:
   Gamestate state;
   Playermode mode;
   std::string playerName;
-  HostOrClient connection;
+  Client connection;
   sf::Font PriFont;
   sf::Font SecFont;
   sf::RenderWindow *window;

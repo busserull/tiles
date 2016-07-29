@@ -3,7 +3,6 @@
 #include <vector>
 #include <string>
 #include "hostorclient.hpp"
-#include "field.hpp"
 
 class Server : public HostOrClient{
 public:

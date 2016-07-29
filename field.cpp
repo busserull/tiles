@@ -214,7 +214,7 @@ std::ostream& operator << (std::ostream& stream, const Field& board){
   return stream;
 }
 
-void Field::setTile(int x, int y, bool isOpen, bool isMine, bool isFlagged, std::string flagger, int surrounding){
+void Field::setTile(int x, int y, bool isOpen, bool isMine, bool isFlagged, std::string flagger){
   int index = y * width + x;
   field[index].isOpen = isOpen;
   field[index].isMine = isMine;
