@@ -32,7 +32,7 @@ private:
   void drawLabel(int x, int y);
   void drawEmptyBackground();
   void drawNameBox(std::string inputName);
-  bool getUserName(std::string& inputName);
+  bool getUserName(std::string& inputName, bool& changed);
   int height;
   int width;
   int mines;

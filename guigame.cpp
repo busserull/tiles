@@ -248,38 +248,28 @@ void GuiGame::display(){
 }
 
 void GuiGame::updateTitle(){
-  updateGameState();
   std::string title;
-  switch(state){
-    case Gamestate::Won:
-      title = "Won";
-      break;
-    case Gamestate::Lost:
-      title = "Lost";
-      break;
-    case Gamestate::Playing:
-      title = "Playing";
-      break;
-    case Gamestate::Pending:
-      title = "Pending";
-      break;
+  if(mode == Playermode::Singleplayer){
+    title = "Singleplayer: " + playerName;
+  }
+  else{
+    title = "Multiplayer: " + playerName;
   }
   window->setTitle(title);
 }
 
 void GuiGame::displayWelcomeScreen(){
-  // Draw empty screen
-  {
-    std::string inputName = "Babbage";
-    bool inputNameSet = false;
-    while(!inputNameSet){
-      window->clear();
-      drawEmptyBackground();
-      drawNameBox(inputName);
-      window->display();
-      inputNameSet = getUserName(inputName);
-    }
+  std::string inputName = "Babbage";
+  bool inputNameSet = false;
+  bool nameChanged = false;
+  while(!inputNameSet){
+    window->clear();
+    drawEmptyBackground();
+    drawNameBox(inputName);
+    window->display();
+    inputNameSet = getUserName(inputName, nameChanged);
   }
+  playerName = inputName;
 }
 
 void GuiGame::clickAt(int x, int y, sf::Mouse::Button button){
@@ -407,23 +397,28 @@ void GuiGame::drawNameBox(std::string inputName){
   userName.setFont(PriFont);
   userName.setCharacterSize(height * tile_size / 10);
   userName.setStyle(sf::Text::Bold);
-  userName.setString(inputName);
+  userName.setString("M"); // So the name does not jump up and down if it gets changed
   userName.setColor(closed_tile_color);
   {
     sf::FloatRect boundingBox = userName.getLocalBounds();
     userName.setOrigin(boundingBox.left, boundingBox.top + boundingBox.height / 2);
   }
+  userName.setString(inputName);
   userName.setPosition(position + sf::Vector2f(2 * border_size, height * tile_size / 12));
   window->draw(userName);
 }
 
-bool GuiGame::getUserName(std::string& inputName){
+bool GuiGame::getUserName(std::string& inputName, bool& changed){
   sf::Event event;
   while(window->pollEvent(event)){
     if(event.type == sf::Event::EventType::KeyPressed){
       switch(event.key.code){
         case sf::Keyboard::Key::BackSpace:
-          if(inputName != ""){
+          if(!changed){
+            inputName = "";
+            changed = true;
+          }
+          else if(inputName != ""){
             inputName.pop_back();
           }
           break;
@@ -433,6 +428,10 @@ bool GuiGame::getUserName(std::string& inputName){
       }
     }
     else if(event.type == sf::Event::EventType::TextEntered){
+      if(!changed){
+        inputName = "";
+        changed = true;
+      }
       sf::Event::TextEvent text = event.text;
       if(text.unicode >= 'a' && text.unicode <= 'z'){
         inputName.push_back(text.unicode);
