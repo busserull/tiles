@@ -430,84 +430,15 @@ bool GuiGame::getUserName(std::string& inputName){
         case sf::Keyboard::Key::Return:
           return true;
           break;
-        case sf::Keyboard::Key::A:
-        	inputName.push_back('a');
-        	break;
-        case sf::Keyboard::Key::B:
-        	inputName.push_back('b');
-        	break;
-        case sf::Keyboard::Key::C:
-        	inputName.push_back('c');
-        	break;
-        case sf::Keyboard::Key::D:
-        	inputName.push_back('d');
-        	break;
-        case sf::Keyboard::Key::E:
-        	inputName.push_back('e');
-        	break;
-        case sf::Keyboard::Key::F:
-        	inputName.push_back('f');
-        	break;
-        case sf::Keyboard::Key::G:
-        	inputName.push_back('g');
-        	break;
-        case sf::Keyboard::Key::H:
-        	inputName.push_back('h');
-        	break;
-        case sf::Keyboard::Key::I:
-        	inputName.push_back('i');
-        	break;
-        case sf::Keyboard::Key::J:
-        	inputName.push_back('j');
-        	break;
-        case sf::Keyboard::Key::K:
-        	inputName.push_back('k');
-        	break;
-        case sf::Keyboard::Key::L:
-        	inputName.push_back('l');
-        	break;
-        case sf::Keyboard::Key::M:
-        	inputName.push_back('m');
-        	break;
-        case sf::Keyboard::Key::N:
-        	inputName.push_back('n');
-        	break;
-        case sf::Keyboard::Key::O:
-        	inputName.push_back('o');
-        	break;
-        case sf::Keyboard::Key::P:
-        	inputName.push_back('p');
-        	break;
-        case sf::Keyboard::Key::Q:
-        	inputName.push_back('q');
-        	break;
-        case sf::Keyboard::Key::R:
-        	inputName.push_back('r');
-        	break;
-        case sf::Keyboard::Key::S:
-        	inputName.push_back('s');
-        	break;
-        case sf::Keyboard::Key::T:
-        	inputName.push_back('t');
-        	break;
-        case sf::Keyboard::Key::U:
-        	inputName.push_back('u');
-        	break;
-        case sf::Keyboard::Key::V:
-        	inputName.push_back('v');
-        	break;
-        case sf::Keyboard::Key::W:
-        	inputName.push_back('w');
-        	break;
-        case sf::Keyboard::Key::X:
-        	inputName.push_back('x');
-        	break;
-        case sf::Keyboard::Key::Y:
-        	inputName.push_back('y');
-        	break;
-        case sf::Keyboard::Key::Z:
-        	inputName.push_back('z');
-        	break;
+      }
+    }
+    else if(event.type == sf::Event::EventType::TextEntered){
+      sf::Event::TextEvent text = event.text;
+      if(text.unicode >= 'a' && text.unicode <= 'z'){
+        inputName.push_back(text.unicode);
+      }
+      else if(text.unicode >= 'A' && text.unicode <= 'Z'){
+        inputName.push_back(tolower(text.unicode));
       }
     }
   }
