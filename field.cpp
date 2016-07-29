@@ -226,6 +226,11 @@ void Field::setTile(int x, int y, bool isOpen, bool isMine, bool isFlagged, std:
   }
 }
 
+void Field::setTime(int seconds){
+  startTime = time(nullptr);
+  endTime = startTime + seconds;
+}
+
 void Field::initializeMineCount(){
   for(int x = 0; x < width; x++){
     for(int y = 0; y < height; y++){

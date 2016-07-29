@@ -51,4 +51,7 @@ void Client::receiveCompleteBoard(Field& field){
     packet >> x >> y >> isOpen >> isMine >> isFlagged >> flagger;
     field.setTile(x, y, isOpen, isMine, isFlagged, flagger);
   }
+  sf::Uint32 secondsSinceStart;
+  packet >> secondsSinceStart;
+  field.setTime(secondsSinceStart);
 }
