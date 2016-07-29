@@ -55,7 +55,9 @@ bool GuiGame::isOpen() const{
 }
 
 void GuiGame::getEvent(){
-  sf::Event event;
+  connection.receiveCompleteBoard(field);
+  std::cout << "Received" << std::endl;
+  /*sf::Event event;
   while(window->pollEvent(event)){
     switch(event.type){
       case sf::Event::EventType::MouseButtonPressed:
@@ -68,7 +70,7 @@ void GuiGame::getEvent(){
             window->close();
         }
     }
-  }
+  }*/
 }
 
 void GuiGame::updateGameState(){
