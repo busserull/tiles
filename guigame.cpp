@@ -151,6 +151,7 @@ void GuiGame::display(){
     if(state == Gamestate::Won){
       sf::Vector2f position = stateLabel.getPosition();
       stateLabel.setString("  D");
+      stateLabel.setStyle(sf::Text::Regular);
       stateLabel.setCharacterSize(height * tile_size / 6);
       boundingBox = stateLabel.getLocalBounds();
       stateLabel.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top + boundingBox.height / 2);
