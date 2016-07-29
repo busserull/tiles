@@ -34,6 +34,7 @@ private:
   void drawGameMode();
   void drawNameBox(std::string inputName);
   bool getUserNameAndMode(std::string& inputName, bool& changed);
+  void updateFlagCount();
   int height;
   int width;
   int mines;

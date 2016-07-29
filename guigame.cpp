@@ -16,6 +16,7 @@ namespace{
   const sf::Color closed_tile_color(50, 50, 50);
   const sf::Color mine_color(255, 81, 89);
   const sf::Color flag_color(255, 205, 70);
+  const sf::Color opponent_flag_color(99, 192, 242);
   const sf::Color number_colors[9] = {
     sf::Color(0, 0, 0),       // 0
     sf::Color(89, 124, 255),  // 1
@@ -284,18 +285,18 @@ void GuiGame::clickAt(int x, int y, sf::Mouse::Button button){
       y = height - y - 1;
       x /= tile_size;
       if(button == sf::Mouse::Button::Left){ // Open
-        if(field.isFlagged(x, y) == false){
+        if(field.isFlagged(x, y) == false || field.getFlagger(x, y) != playerName){
           field.setOpen(x, y);
         }
       }
       else if(button == sf::Mouse::Button::Right){ // Flag
         if(field.isFlagged(x, y)){
-          flagsPlaced--;
-          field.toggleFlag(x, y, playerName);
+          if(field.getFlagger(x, y) == playerName){
+            field.toggleFlag(x, y, playerName);
+          }
         }
         else{
-          if(flagsPlaced < mines && !field.isOpen(x, y)){
-            flagsPlaced++;
+          if(flagsPlaced < mines && !field.isOpen(x, y) && state != Gamestate::Pending){
             field.toggleFlag(x, y, playerName);
           }
         }
@@ -324,6 +325,7 @@ void GuiGame::clickAt(int x, int y, sf::Mouse::Button button){
       }
     }
   }
+  updateFlagCount();
 }
 
 void GuiGame::drawLabel(int x, int y){
@@ -349,7 +351,7 @@ void GuiGame::drawLabel(int x, int y){
   else{                               // tile closed
     if(field.isFlagged(x, y)){
       label.setString("F");
-      label.setColor(flag_color);
+      label.setColor((field.getFlagger(x, y) == playerName?flag_color:opponent_flag_color));
     }
     else{
       needToDraw = false;
@@ -514,6 +516,17 @@ bool GuiGame::getUserNameAndMode(std::string& inputName, bool& changed){
   return false;
 }
 
+void GuiGame::updateFlagCount(){
+  int flags = 0;
+  for(int x = 0; x < width; x++){
+    for(int y = 0; y < height; y++){
+      if(field.isFlagged(x, y) && field.getFlagger(x, y) == playerName){
+        flags++;
+      }
+    }
+  }
+  flagsPlaced = flags;
+}
 
 /*
 std::ostream& operator << (std::ostream& stream, GuiGame& object){
