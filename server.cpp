@@ -55,5 +55,10 @@ void Server::sendCompleteBoard(const Field& field){
       packet << x << y << isOpen << isMine << isFlagged << flagger;
     }
   }
+
+  // Send startTime and endTime
+  sf::Uint32 secondsSinceStart = field.getSecondsSinceStart();
+  packet << secondsSinceStart;
+
   socket.send(packet);
 }
