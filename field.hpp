@@ -19,6 +19,8 @@ public:
   Field(const Field& other);
   Field& operator = (const Field& rhs);
   ~Field();
+  int getHeight() const;
+  int getWidth() const;
   void placeMines(int openX, int openY);
   bool isOpen(int x, int y) const;
   bool isMine(int x, int y) const;

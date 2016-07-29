@@ -58,6 +58,14 @@ Field::~Field(){
   field = nullptr;
 }
 
+int Field::getHeight() const {
+  return height;
+}
+
+int Field::getWidth() const {
+  return width;
+}
+
 void Field::placeMines(int openX, int openY){
   int *fieldArray = new int[(width * height)];
   for(int i = 0; i < (width * height); i++){
