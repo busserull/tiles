@@ -270,7 +270,7 @@ void GuiGame::displayWelcomeScreen(){
     drawGameMode();
     drawNameBox(inputName);
     window->display();
-    inputNameSet = getUserName(inputName, nameChanged);
+    inputNameSet = getUserNameAndMode(inputName, nameChanged);
   }
   playerName = inputName;
 }
@@ -453,7 +453,7 @@ void GuiGame::drawNameBox(std::string inputName){
   window->draw(userName);
 }
 
-bool GuiGame::getUserName(std::string& inputName, bool& changed){
+bool GuiGame::getUserNameAndMode(std::string& inputName, bool& changed){
   sf::Event event;
   while(window->pollEvent(event)){
     if(event.type == sf::Event::EventType::KeyPressed){
@@ -468,8 +468,25 @@ bool GuiGame::getUserName(std::string& inputName, bool& changed){
           }
           break;
         case sf::Keyboard::Key::Return:
-          return true;
+          if(inputName != ""){
+            return true;
+          }
           break;
+        case sf::Keyboard::Key::Right:
+          mode = Playermode::Multiplayer;
+          break;
+        case sf::Keyboard::Key::Left:
+          mode = Playermode::Singleplayer;
+          break;
+      }
+    }
+    else if(event.type == sf::Event::EventType::MouseButtonPressed){
+      int alongXAxis = event.mouseButton.x;
+      if(alongXAxis <= (width * tile_size + side_bar_width) / 2){
+        mode = Playermode::Singleplayer;
+      }
+      else{
+        mode = Playermode::Multiplayer;
       }
     }
     else if(event.type == sf::Event::EventType::TextEntered){

@@ -33,7 +33,7 @@ private:
   void drawEmptyBackground();
   void drawGameMode();
   void drawNameBox(std::string inputName);
-  bool getUserName(std::string& inputName, bool& changed);
+  bool getUserNameAndMode(std::string& inputName, bool& changed);
   int height;
   int width;
   int mines;
