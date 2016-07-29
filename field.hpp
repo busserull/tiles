@@ -29,7 +29,7 @@ public:
   void toggleOpen(int x, int y);
   void setOpen(int x, int y);
   void toggleFlag(int x, int y, std::string name);
-  int getSurroundingMines(int x, int y);
+  int getSurroundingMines(int x, int y) const;
   bool onlyMinesLeft() const;
   bool hasMinesBeenPlaced() const;
   bool hasMinesBeenOpened() const;

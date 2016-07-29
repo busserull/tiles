@@ -274,6 +274,11 @@ void GuiGame::displayWelcomeScreen(){
     inputNameSet = getUserNameAndMode(inputName, nameChanged);
   }
   playerName = inputName;
+  if(mode == Playermode::Multiplayer){
+    // Draw screen to choose IP and port and host or client
+    int port = 55001;
+    connection = Server(playerName, port);
+  }
 }
 
 void GuiGame::clickAt(int x, int y, sf::Mouse::Button button){

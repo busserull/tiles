@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 #include "field.hpp"
+#include "server.hpp"
 
 //#include <ostream> // For operator <<
 
@@ -43,6 +44,7 @@ private:
   Gamestate state;
   Playermode mode;
   std::string playerName;
+  HostOrClient connection;
   sf::Font PriFont;
   sf::Font SecFont;
   sf::RenderWindow *window;

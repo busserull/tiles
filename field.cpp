@@ -164,7 +164,7 @@ void Field::toggleFlag(int x, int y, std::string name){
   field[(y * width + x)].flagger = name;
 }
 
-int Field::getSurroundingMines(int x, int y){
+int Field::getSurroundingMines(int x, int y) const {
   return field[(y * width + x)].surrounding;
 }
 
@@ -216,7 +216,7 @@ void Field::setTile(int x, int y, bool isOpen, bool isMine, bool isFlagged, std:
   field[index].isMine = isMine;
   field[index].isFlagged = isFlagged;
   field[index].flagger = flagger;
-  field[indxe].surrounding = surrounding;
+  field[index].surrounding = surrounding;
 }
 
 void Field::initializeMineCount(){
