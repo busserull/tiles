@@ -38,23 +38,21 @@ void Server::waitForConnection(){
 void Server::sendCompleteBoard(const Field& field){
   sf::Packet packet;
   packet << "completeBoard";
-  sf::Uint32 height, width;
+  sf::Uint32 height, width, mines;
   height = field.getHeight();
   width = field.getWidth();
-  packet << height << width;
+  mines = field.getMines();
+  packet << height << width << mines;
 
   // (x, y, isOpen, isMine, isFlagged, flagger, surrounding)
-  for(int x = 0; x < width; x++){
-    for(int y = 0; y < height; y++){
+  for(sf::Uint32 x = 0; x < width; x++){
+    for(sf::Uint32 y = 0; y < height; y++){
       bool isOpen = field.isOpen(x, y);
       bool isMine = field.isMine(x, y);
       bool isFlagged = field.isFlagged(x, y);
       std::string flagger = field.getFlagger(x, y);
       sf::Uint8 surrounding = field.getSurroundingMines(x, y);
-      sf::Uint32 xPos = x;
-      sf::Uint32 yPos = y;
-      packet << xPos << yPos << isOpen << isMine << isFlagged
-      << flagger << surrounding;
+      packet << x << y << isOpen << isMine << isFlagged << flagger;
     }
   }
   socket.send(packet);
