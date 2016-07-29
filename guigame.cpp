@@ -1,6 +1,8 @@
 #include "guigame.hpp"
 #include <stdexcept>
 
+#include <iostream>
+
 namespace{
   const int tile_size = 40;
   const int border_size = 2;
@@ -278,6 +280,10 @@ void GuiGame::displayWelcomeScreen(){
     // Draw screen to choose IP and port and host or client
     int port = 55001;
     connection = Server(playerName, port);
+    std::cout << "Created server" << std::endl;
+    connection.waitForConnection();
+    std::cout << "Connection received" << std::endl;
+    connection.sendCompleteBoard(field);
   }
 }
 

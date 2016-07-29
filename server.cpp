@@ -1,7 +1,18 @@
 #include "server.hpp"
 
+Server::Server() : listenPort(55001){
+}
+
 Server::Server(std::string hostName, int listenPort) : listenPort(listenPort){
   connectedPlayers.push_back(hostName);
+}
+
+Server& Server::operator = (const Server& rhs){
+  if(&rhs == this){
+    return *this;
+  }
+  listenPort = rhs.listenPort;
+  connectedPlayers = rhs.connectedPlayers;
 }
 
 void Server::waitForConnection(){

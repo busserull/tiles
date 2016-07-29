@@ -7,7 +7,9 @@
 
 class Server : public HostOrClient{
 public:
+  Server();
   Server(std::string hostName, int listenPort);
+  Server& operator = (const Server& rhs);
   void waitForConnection();
   void sendCompleteBoard(const Field& field);
 private:

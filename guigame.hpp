@@ -44,7 +44,7 @@ private:
   Gamestate state;
   Playermode mode;
   std::string playerName;
-  HostOrClient connection;
+  Server connection;
   sf::Font PriFont;
   sf::Font SecFont;
   sf::RenderWindow *window;
