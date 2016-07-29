@@ -1,6 +1,7 @@
 #ifndef GUIGAME_HPP
 #define GUIGAME_HPP
 #include <SFML/Graphics.hpp>
+#include <string>
 #include "field.hpp"
 
 //#include <ostream> // For operator <<
@@ -23,11 +24,15 @@ public:
   Gamestate getState() const;
   void display();
   void updateTitle();
+  void displayWelcomeScreen();
   //friend std::ostream& operator << (std::ostream& stream, GuiGame& object); ///
 private:
   //bool changed; // For operator <<
   void clickAt(int x, int y, sf::Mouse::Button button);
   void drawLabel(int x, int y);
+  void drawEmptyBackground();
+  void drawNameBox(std::string inputName);
+  bool getUserName(std::string& inputName);
   int height;
   int width;
   int mines;
@@ -35,7 +40,9 @@ private:
   Field field;
   Gamestate state;
   Playermode mode;
-  sf::Font font;
+  std::string playerName;
+  sf::Font PriFont;
+  sf::Font SecFont;
   sf::RenderWindow *window;
 };
 

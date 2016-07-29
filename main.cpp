@@ -10,6 +10,7 @@ namespace{
 
 int main(){
   GuiGame game(height, width, mines);
+  game.displayWelcomeScreen();
   while(game.isOpen()){
     game.getEvent();
     game.display();

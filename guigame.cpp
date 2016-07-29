@@ -6,6 +6,10 @@ namespace{
   const int border_size = 2;
   const int side_bar_width = tile_size * 4;
 
+  const std::string primary_font = "sansation.ttf";
+  const std::string secondary_font = "bebasregular.otf";
+  const int max_name_length = 15;
+
   const sf::Color side_bar_color(182, 228, 109);
   const sf::Color side_bar_mutable_color(99, 192, 242);
   const sf::Color open_tile_color(120, 120, 120);
@@ -25,10 +29,14 @@ namespace{
   };
 }
 
-GuiGame::GuiGame(int height, int width, int mines) : height(height), width(width), mines(mines), flagsPlaced(0), state(Gamestate::Pending), mode(Playermode::Singleplayer){
+GuiGame::GuiGame(int height, int width, int mines) : height(height), width(width), mines(mines),
+flagsPlaced(0), state(Gamestate::Pending), mode(Playermode::Singleplayer), playerName("Babbage"){
   field = Field(height, width, mines);
-  if(!font.loadFromFile("sansation.ttf")){
-    throw std::runtime_error("Could not load sansation.ttf");
+  if(!PriFont.loadFromFile(primary_font)){
+    throw std::runtime_error("Could not load " + primary_font);
+  }
+  if(!SecFont.loadFromFile(secondary_font)){
+    throw std::runtime_error("Could not load " + secondary_font);
   }
   window = new sf::RenderWindow(sf::VideoMode(width * tile_size + border_size + side_bar_width, height * tile_size + border_size),
   "Tiles", sf::Style::Titlebar);
@@ -138,7 +146,7 @@ void GuiGame::display(){
         break;
     }
     sf::Text stateLabel;
-    stateLabel.setFont(font);
+    stateLabel.setFont(PriFont);
     stateLabel.setCharacterSize(height * tile_size / 4);
     stateLabel.setStyle(sf::Text::Bold);
     stateLabel.setString(indicatorStr);
@@ -185,7 +193,7 @@ void GuiGame::display(){
       minString = "00";
     }
     sf::Text timeLabel;
-    timeLabel.setFont(font);
+    timeLabel.setFont(SecFont);
     timeLabel.setCharacterSize(height * tile_size / 16);
     timeLabel.setStyle(sf::Text::Bold);
     timeLabel.setString(minString + ":" + secString); ///
@@ -198,7 +206,7 @@ void GuiGame::display(){
   // Start drawing minecounter
   {
     sf::Text mineLabel;
-    mineLabel.setFont(font);
+    mineLabel.setFont(SecFont);
     mineLabel.setCharacterSize(height * tile_size / 4);
     mineLabel.setStyle(sf::Text::Bold);
     if(state != Gamestate::Playing){
@@ -213,27 +221,27 @@ void GuiGame::display(){
     mineLabel.setPosition(width * tile_size + side_bar_width / 2, height * tile_size * 5 / 6);
     window->draw(mineLabel);
 
-    // Mines or Flags
+    // Blue 'mines' if mine count is mutable, green otherwise
     int labelOffset = height * tile_size * 5 / 6 + boundingBox.height * 2 / 3;
-    sf::Text minesOrFlags;
-    minesOrFlags.setFont(font);
-    minesOrFlags.setCharacterSize(height * tile_size / 24);
+    sf::Text minesMutable;
+    minesMutable.setFont(SecFont);
+    minesMutable.setCharacterSize(height * tile_size / 24);
     if(state != Gamestate::Playing){
-      minesOrFlags.setColor(side_bar_mutable_color);
+      minesMutable.setColor(side_bar_mutable_color);
     }
     else{
-      minesOrFlags.setColor(side_bar_color);
+      minesMutable.setColor(side_bar_color);
     }
     if(mines == 1){
-      minesOrFlags.setString("mine");
+      minesMutable.setString("mine");
     }
     else{
-      minesOrFlags.setString("mines");
+      minesMutable.setString("mines");
     }
-    boundingBox = minesOrFlags.getLocalBounds();
-    minesOrFlags.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top);
-    minesOrFlags.setPosition(width * tile_size + side_bar_width / 2, labelOffset);
-    window->draw(minesOrFlags);
+    boundingBox = minesMutable.getLocalBounds();
+    minesMutable.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top);
+    minesMutable.setPosition(width * tile_size + side_bar_width / 2, labelOffset);
+    window->draw(minesMutable);
   }
   // Stop drawing sidebar
   window->display();
@@ -257,6 +265,21 @@ void GuiGame::updateTitle(){
       break;
   }
   window->setTitle(title);
+}
+
+void GuiGame::displayWelcomeScreen(){
+  // Draw empty screen
+  {
+    std::string inputName = "Babbage";
+    bool inputNameSet = false;
+    while(!inputNameSet){
+      window->clear();
+      drawEmptyBackground();
+      drawNameBox(inputName);
+      window->display();
+      inputNameSet = getUserName(inputName);
+    }
+  }
 }
 
 void GuiGame::clickAt(int x, int y, sf::Mouse::Button button){
@@ -312,7 +335,7 @@ void GuiGame::clickAt(int x, int y, sf::Mouse::Button button){
 
 void GuiGame::drawLabel(int x, int y){
   sf::Text label;
-  label.setFont(font);
+  label.setFont(PriFont);
   label.setCharacterSize(tile_size / 2);
   label.setStyle(sf::Text::Bold);
   bool needToDraw = true;
@@ -346,6 +369,159 @@ void GuiGame::drawLabel(int x, int y){
     window->draw(label);
   }
 }
+
+void GuiGame::drawEmptyBackground(){
+  sf::RectangleShape screen;
+  screen.setSize(sf::Vector2f(width * tile_size + side_bar_width - border_size, height * tile_size - border_size));
+  screen.setFillColor(closed_tile_color);
+  screen.setPosition(border_size, border_size);
+  window->draw(screen);
+}
+
+void GuiGame::drawNameBox(std::string inputName){
+  sf::RectangleShape box;
+  box.setSize(sf::Vector2f(width * tile_size, height * tile_size / 6));
+  box.setFillColor(open_tile_color);
+  //box.setOutlineColor(sf::Color::Black);
+  //box.setOutlineThickness(border_size);
+  box.setOrigin(width * tile_size / 2, height * tile_size / 12);
+  box.setPosition((width * tile_size + side_bar_width) / 2, height * tile_size / 2);
+  window->draw(box);
+
+  sf::Vector2f position = box.getPosition();
+  position -= sf::Vector2f(width * tile_size / 2, height * tile_size / 12);
+  sf::Text nameLabel;
+  nameLabel.setFont(SecFont);
+  nameLabel.setCharacterSize(height * tile_size / 16);
+  nameLabel.setStyle(sf::Text::Bold);
+  nameLabel.setString("name:");
+  nameLabel.setColor(open_tile_color);
+  {
+    sf::FloatRect boundingBox = nameLabel.getLocalBounds();
+    nameLabel.setOrigin(boundingBox.left, boundingBox.top + boundingBox.height);
+  }
+  nameLabel.setPosition(position - sf::Vector2f(0, border_size));
+  window->draw(nameLabel);
+
+  sf::Text userName;
+  userName.setFont(PriFont);
+  userName.setCharacterSize(height * tile_size / 10);
+  userName.setStyle(sf::Text::Bold);
+  userName.setString(inputName);
+  userName.setColor(closed_tile_color);
+  {
+    sf::FloatRect boundingBox = userName.getLocalBounds();
+    userName.setOrigin(boundingBox.left, boundingBox.top + boundingBox.height / 2);
+  }
+  userName.setPosition(position + sf::Vector2f(2 * border_size, height * tile_size / 12));
+  window->draw(userName);
+}
+
+bool GuiGame::getUserName(std::string& inputName){
+  sf::Event event;
+  while(window->pollEvent(event)){
+    if(event.type == sf::Event::EventType::KeyPressed){
+      switch(event.key.code){
+        case sf::Keyboard::Key::BackSpace:
+          if(inputName != ""){
+            inputName.pop_back();
+          }
+          break;
+        case sf::Keyboard::Key::Return:
+          return true;
+          break;
+        case sf::Keyboard::Key::A:
+        	inputName.push_back('a');
+        	break;
+        case sf::Keyboard::Key::B:
+        	inputName.push_back('b');
+        	break;
+        case sf::Keyboard::Key::C:
+        	inputName.push_back('c');
+        	break;
+        case sf::Keyboard::Key::D:
+        	inputName.push_back('d');
+        	break;
+        case sf::Keyboard::Key::E:
+        	inputName.push_back('e');
+        	break;
+        case sf::Keyboard::Key::F:
+        	inputName.push_back('f');
+        	break;
+        case sf::Keyboard::Key::G:
+        	inputName.push_back('g');
+        	break;
+        case sf::Keyboard::Key::H:
+        	inputName.push_back('h');
+        	break;
+        case sf::Keyboard::Key::I:
+        	inputName.push_back('i');
+        	break;
+        case sf::Keyboard::Key::J:
+        	inputName.push_back('j');
+        	break;
+        case sf::Keyboard::Key::K:
+        	inputName.push_back('k');
+        	break;
+        case sf::Keyboard::Key::L:
+        	inputName.push_back('l');
+        	break;
+        case sf::Keyboard::Key::M:
+        	inputName.push_back('m');
+        	break;
+        case sf::Keyboard::Key::N:
+        	inputName.push_back('n');
+        	break;
+        case sf::Keyboard::Key::O:
+        	inputName.push_back('o');
+        	break;
+        case sf::Keyboard::Key::P:
+        	inputName.push_back('p');
+        	break;
+        case sf::Keyboard::Key::Q:
+        	inputName.push_back('q');
+        	break;
+        case sf::Keyboard::Key::R:
+        	inputName.push_back('r');
+        	break;
+        case sf::Keyboard::Key::S:
+        	inputName.push_back('s');
+        	break;
+        case sf::Keyboard::Key::T:
+        	inputName.push_back('t');
+        	break;
+        case sf::Keyboard::Key::U:
+        	inputName.push_back('u');
+        	break;
+        case sf::Keyboard::Key::V:
+        	inputName.push_back('v');
+        	break;
+        case sf::Keyboard::Key::W:
+        	inputName.push_back('w');
+        	break;
+        case sf::Keyboard::Key::X:
+        	inputName.push_back('x');
+        	break;
+        case sf::Keyboard::Key::Y:
+        	inputName.push_back('y');
+        	break;
+        case sf::Keyboard::Key::Z:
+        	inputName.push_back('z');
+        	break;
+      }
+    }
+  }
+  while(inputName.length() > max_name_length){
+    inputName.pop_back();
+  }
+  if(inputName.length() == 1){
+    char lower = inputName[0];
+    inputName.pop_back();
+    inputName.push_back(toupper(lower));
+  }
+  return false;
+}
+
 
 /*
 std::ostream& operator << (std::ostream& stream, GuiGame& object){
