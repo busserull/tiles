@@ -66,6 +66,10 @@ int Field::getWidth() const {
   return width;
 }
 
+int Field::getMines() const {
+  return mines;
+}
+
 void Field::placeMines(int openX, int openY){
   int *fieldArray = new int[(width * height)];
   for(int i = 0; i < (width * height); i++){
@@ -216,7 +220,10 @@ void Field::setTile(int x, int y, bool isOpen, bool isMine, bool isFlagged, std:
   field[index].isMine = isMine;
   field[index].isFlagged = isFlagged;
   field[index].flagger = flagger;
-  field[index].surrounding = surrounding;
+  if(index == width * height - 1){
+    initializeMineCount();
+    minesPlaced = true;
+  }
 }
 
 void Field::initializeMineCount(){

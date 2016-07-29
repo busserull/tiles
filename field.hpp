@@ -21,6 +21,7 @@ public:
   ~Field();
   int getHeight() const;
   int getWidth() const;
+  int getMines() const;
   void placeMines(int openX, int openY);
   bool isOpen(int x, int y) const;
   bool isMine(int x, int y) const;
