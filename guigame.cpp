@@ -290,12 +290,12 @@ void GuiGame::clickAt(int x, int y, sf::Mouse::Button button){
       else if(button == sf::Mouse::Button::Right){ // Flag
         if(field.isFlagged(x, y)){
           flagsPlaced--;
-          field.toggleFlag(x, y, "Babbage");
+          field.toggleFlag(x, y, playerName);
         }
         else{
           if(flagsPlaced < mines && !field.isOpen(x, y)){
             flagsPlaced++;
-            field.toggleFlag(x, y, "Babbage");
+            field.toggleFlag(x, y, playerName);
           }
         }
       }
