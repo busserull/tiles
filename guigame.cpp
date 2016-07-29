@@ -1,8 +1,6 @@
 #include "guigame.hpp"
 #include <stdexcept>
 
-#include <iostream>
-
 namespace{
   const int tile_size = 40;
   const int border_size = 2;
@@ -56,7 +54,6 @@ bool GuiGame::isOpen() const{
 
 void GuiGame::getEvent(){
   connection.receiveCompleteBoard(field);
-  std::cout << "Received" << std::endl;
   /*sf::Event event;
   while(window->pollEvent(event)){
     switch(event.type){
@@ -282,11 +279,8 @@ void GuiGame::displayWelcomeScreen(){
     // Draw screen to choose IP and port and host or client
     std::string ipAddress = "127.0.0.1";
     int port = 55001;
-    std::cout << "ip and port" << std::endl;
     connection = Client(ipAddress, port);
-    std::cout << "created client" << std::endl;
     connection.connectToHost(playerName);
-    std::cout << "Receiving..." << std::endl;
     connection.receiveCompleteBoard(field);
   }
 }
