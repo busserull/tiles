@@ -222,6 +222,8 @@ void GuiGame::display(){
     window->draw(mineLabel);
 
     // Blue 'mines' if mine count is mutable, green otherwise
+    mineLabel.setString("30"); // Stop 'mines' label from jumping up and down as mines are changed
+    boundingBox = mineLabel.getLocalBounds();
     int labelOffset = height * tile_size * 5 / 6 + boundingBox.height * 2 / 3;
     sf::Text minesMutable;
     minesMutable.setFont(SecFont);
@@ -232,7 +234,7 @@ void GuiGame::display(){
     else{
       minesMutable.setColor(side_bar_color);
     }
-    if(mines == 1){
+    if(mines - flagsPlaced == 1){
       minesMutable.setString("mine");
     }
     else{
