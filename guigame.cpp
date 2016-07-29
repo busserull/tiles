@@ -86,6 +86,7 @@ void GuiGame::updateGameState(){
       state = Gamestate::Playing;
     }
   }
+  connection.sendCompleteBoard(field);
 }
 
 Gamestate GuiGame::getState() const {
