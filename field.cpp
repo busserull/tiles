@@ -210,6 +210,15 @@ std::ostream& operator << (std::ostream& stream, const Field& board){
   return stream;
 }
 
+void Field::setTile(int x, int y, bool isOpen, bool isMine, bool isFlagged, std::string flagger, int surrounding){
+  int index = y * width + x;
+  field[index].isOpen = isOpen;
+  field[index].isMine = isMine;
+  field[index].isFlagged = isFlagged;
+  field[index].flagger = flagger;
+  field[indxe].surrounding = surrounding;
+}
+
 void Field::initializeMineCount(){
   for(int x = 0; x < width; x++){
     for(int y = 0; y < height; y++){

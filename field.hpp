@@ -34,8 +34,13 @@ public:
   bool hasMinesBeenPlaced() const;
   bool hasMinesBeenOpened() const;
   int getSecondsSinceStart() const;
+  void setTile(int x, int y, bool isOpen, bool isMine, bool isFlagged, std::string flagger, int surrounding);
   friend std::ostream& operator << (std::ostream& stream, const Field& board);
 private:
+  void initializeMineCount();
+  const Tile& at(int x, int y) const;
+  void flushSurrounding(int x, int y);
+  bool onBoard(int x, int y) const;
   Tile *field;
   int height;
   int width;
@@ -46,10 +51,6 @@ private:
   time_t startTime;
   time_t endTime;
   bool endTimeSet;
-  void initializeMineCount();
-  const Tile& at(int x, int y) const;
-  void flushSurrounding(int x, int y);
-  bool onBoard(int x, int y) const;
 };
 
 #endif
