@@ -31,6 +31,7 @@ private:
   void clickAt(int x, int y, sf::Mouse::Button button);
   void drawLabel(int x, int y);
   void drawEmptyBackground();
+  void drawGameMode();
   void drawNameBox(std::string inputName);
   bool getUserName(std::string& inputName, bool& changed);
   int height;

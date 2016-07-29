@@ -267,6 +267,7 @@ void GuiGame::displayWelcomeScreen(){
   while(!inputNameSet){
     window->clear();
     drawEmptyBackground();
+    drawGameMode();
     drawNameBox(inputName);
     window->display();
     inputNameSet = getUserName(inputName, nameChanged);
@@ -368,6 +369,48 @@ void GuiGame::drawEmptyBackground(){
   screen.setFillColor(closed_tile_color);
   screen.setPosition(border_size, border_size);
   window->draw(screen);
+}
+
+void GuiGame::drawGameMode(){
+  int midPointUnderNameBox;
+  // Draw two separator lines
+  {
+    int halfNameBoxHeight = height * tile_size / 12;
+    int halfHeightOfWindow = height * tile_size / 2;
+    midPointUnderNameBox = 3 * halfHeightOfWindow / 2 + halfNameBoxHeight / 2;
+    sf::RectangleShape separator;
+    separator.setFillColor(open_tile_color);
+    separator.setSize(sf::Vector2f(border_size / 2, halfHeightOfWindow - halfNameBoxHeight - 6 * border_size));
+    separator.setOrigin(sf::Vector2f(border_size / 4, (halfHeightOfWindow - halfNameBoxHeight - 6 * border_size) / 2));
+    separator.setPosition((width * tile_size + side_bar_width) / 2, (halfHeightOfWindow - halfNameBoxHeight) / 2);
+    window->draw(separator);
+    separator.setPosition((width * tile_size + side_bar_width) / 2, midPointUnderNameBox);
+    window->draw(separator);
+  }
+  // Draw selected game mode
+  {
+    int midXAxisSquare = (width * tile_size + side_bar_width) / 4;
+    sf::Text singleLabel("Singleplayer", SecFont, height * tile_size / 8);
+    sf::Text multiLabel("Multiplayer", SecFont, height * tile_size / 8);
+    if(mode == Playermode::Singleplayer){
+      singleLabel.setColor(side_bar_color);
+      multiLabel.setColor(open_tile_color);
+    }
+    else{
+      singleLabel.setColor(open_tile_color);
+      multiLabel.setColor(side_bar_color);
+    }
+    // Determine origin
+    {
+      sf::FloatRect boundingBox = singleLabel.getLocalBounds();
+      singleLabel.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top + boundingBox.height / 2);
+      multiLabel.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top + boundingBox.height / 2);
+    }
+    singleLabel.setPosition(sf::Vector2f(midXAxisSquare, midPointUnderNameBox));
+    multiLabel.setPosition(sf::Vector2f(3 * midXAxisSquare, midPointUnderNameBox));
+    window->draw(singleLabel);
+    window->draw(multiLabel);
+  }
 }
 
 void GuiGame::drawNameBox(std::string inputName){
