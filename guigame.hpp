@@ -43,6 +43,7 @@ private:
   Playermode mode;
   Playermode lastSelectedMultiplayerMode;
   std::string playerName;
+  bool playerTurn;
   sf::Font PriFont;
   sf::Font SecFont;
   sf::RenderWindow *window;
