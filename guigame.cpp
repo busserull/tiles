@@ -62,7 +62,7 @@ GuiGame::GuiGame(const GuiGame& other){
   }
 
   delete window;
-  window = new sf::RenderWindow(sf::VideoMode(width * tile_size + border_size + side_bar_width, heigt * tile_size + border_size),
+  window = new sf::RenderWindow(sf::VideoMode(width * tile_size + border_size + side_bar_width, height * tile_size + border_size),
   "Tiles", sf::Style::Titlebar);
 }
 
@@ -79,7 +79,7 @@ GuiGame& GuiGame::operator = (const GuiGame& rhs){
   lastSelectedMultiplayerMode = rhs.lastSelectedMultiplayerMode;
   playerName = rhs.playerName;
   field = rhs.field;
-  f(!PriFont.loadFromFile(primary_font)){
+  if(!PriFont.loadFromFile(primary_font)){
     throw std::runtime_error("Could not load " + primary_font);
   }
   if(!SecFont.loadFromFile(secondary_font)){
@@ -87,7 +87,7 @@ GuiGame& GuiGame::operator = (const GuiGame& rhs){
   }
 
   delete window;
-  window = new sf::RenderWindow(sf::VideoMode(width * tile_size + border_size + side_bar_width, heigt * tile_size + border_size),
+  window = new sf::RenderWindow(sf::VideoMode(width * tile_size + border_size + side_bar_width, height * tile_size + border_size),
   "Tiles", sf::Style::Titlebar);
 
   return (*this);
