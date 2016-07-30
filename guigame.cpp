@@ -31,7 +31,7 @@ namespace{
 }
 
 GuiGame::GuiGame(int height, int width, int mines) : height(height), width(width), mines(mines),
-flagsPlaced(0), state(Gamestate::Pending), mode(Playermode::Singleplayer), playerName("Babbage"){
+flagsPlaced(0), state(Gamestate::Pending), mode(Playermode::Singleplayer), lastSelectedMultiplayerMode(Playermode::Client), playerName("Babbage"){
   field = Field(height, width, mines);
   if(!PriFont.loadFromFile(primary_font)){
     throw std::runtime_error("Could not load " + primary_font);
@@ -252,11 +252,16 @@ void GuiGame::display(){
 
 void GuiGame::updateTitle(){
   std::string title;
-  if(mode == Playermode::Singleplayer){
-    title = "Singleplayer: " + playerName;
-  }
-  else{
-    title = "Multiplayer: " + playerName;
+  switch(mode){
+    case Playermode::Singleplayer:
+      title = "Singleplayer";
+      break;
+    case Playermode::Client:
+      title = "Client";
+      break;
+    case Playermode::Host:
+      title = "Host";
+      break;
   }
   window->setTitle(title);
 }
@@ -394,24 +399,57 @@ void GuiGame::drawGameMode(){
     int midXAxisSquare = (width * tile_size + side_bar_width) / 4;
     sf::Text singleLabel("Singleplayer", SecFont, height * tile_size / 8);
     sf::Text multiLabel("Multiplayer", SecFont, height * tile_size / 8);
+    sf::Text hostClientLabel("", SecFont, height * tile_size / 14);
+    { // Set correct host or client string
+      std::string hostClientString;
+      switch(mode){
+        case Playermode::Client:
+          hostClientString = "Client";
+          break;
+        case Playermode::Host:
+          hostClientString = "Host";
+          break;
+        default:
+          switch(lastSelectedMultiplayerMode){
+            case Playermode::Client:
+              hostClientString = "Client";
+              break;
+            case Playermode::Host:
+              hostClientString = "Host";
+              break;
+          }
+          break;
+      }
+      hostClientLabel.setString(hostClientString);
+    }
     if(mode == Playermode::Singleplayer){
       singleLabel.setColor(side_bar_color);
       multiLabel.setColor(open_tile_color);
+      hostClientLabel.setColor(open_tile_color);
     }
     else{
       singleLabel.setColor(open_tile_color);
       multiLabel.setColor(side_bar_color);
+      hostClientLabel.setColor(side_bar_color);
     }
     // Determine origin
     {
       sf::FloatRect boundingBox = singleLabel.getLocalBounds();
       singleLabel.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top + boundingBox.height / 2);
       multiLabel.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top + boundingBox.height / 2);
+
+      boundingBox = hostClientLabel.getLocalBounds();
+      hostClientLabel.setOrigin(boundingBox.left + boundingBox.width, boundingBox.top);
     }
     singleLabel.setPosition(sf::Vector2f(midXAxisSquare, midPointUnderNameBox));
     multiLabel.setPosition(sf::Vector2f(3 * midXAxisSquare, midPointUnderNameBox));
+
+    sf::FloatRect position = multiLabel.getGlobalBounds();
+    hostClientLabel.setPosition(sf::Vector2f(position.left + position.width, position.top + position.height + border_size));
+
     window->draw(singleLabel);
     window->draw(multiLabel);
+    window->draw(hostClientLabel);
   }
 }
 
@@ -475,20 +513,71 @@ bool GuiGame::getUserNameAndMode(std::string& inputName, bool& changed){
           }
           break;
         case sf::Keyboard::Key::Right:
-          mode = Playermode::Multiplayer;
+          if(mode == Playermode::Singleplayer){
+            mode = lastSelectedMultiplayerMode;
+          }
+          else{ // Had already selected host or client
+            if(mode == Playermode::Client){
+              lastSelectedMultiplayerMode = Playermode::Client;
+              mode = Playermode::Host;
+            }
+            else{
+              lastSelectedMultiplayerMode = Playermode::Host;
+              mode = Playermode::Client;
+            }
+          }
           break;
         case sf::Keyboard::Key::Left:
+          if(mode == Playermode::Client){
+            lastSelectedMultiplayerMode = Playermode::Client;
+          }
+          else{
+            lastSelectedMultiplayerMode = Playermode::Host;
+          }
           mode = Playermode::Singleplayer;
+          break;
+        case sf::Keyboard::Key::Up:
+        case sf::Keyboard::Key::Down:
+          switch(mode){
+            case Playermode::Client:
+              mode = Playermode::Host;
+              lastSelectedMultiplayerMode = Playermode::Client;
+              break;
+            case Playermode::Host:
+              mode = Playermode::Client;
+              lastSelectedMultiplayerMode = Playermode::Host;
+              break;
+          }
           break;
       }
     }
     else if(event.type == sf::Event::EventType::MouseButtonPressed){
       int alongXAxis = event.mouseButton.x;
       if(alongXAxis <= (width * tile_size + side_bar_width) / 2){
+        switch(mode){
+          case Playermode::Client:
+            lastSelectedMultiplayerMode = Playermode::Client;
+            break;
+          case Playermode::Host:
+            lastSelectedMultiplayerMode = Playermode::Host;
+            break;
+        }
         mode = Playermode::Singleplayer;
       }
       else{
-        mode = Playermode::Multiplayer;
+        if(mode == Playermode::Singleplayer){
+          mode = lastSelectedMultiplayerMode;
+        }
+        else{ // Was already either host or client
+          if(mode == Playermode::Client){
+            lastSelectedMultiplayerMode = Playermode::Client;
+            mode = Playermode::Host;
+          }
+          else{
+            lastSelectedMultiplayerMode = Playermode::Host;
+            mode = Playermode::Client;
+          }
+        }
       }
     }
     else if(event.type == sf::Event::EventType::TextEntered){

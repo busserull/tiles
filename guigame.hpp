@@ -11,7 +11,7 @@ enum class Gamestate{
 };
 
 enum class Playermode{
-  Singleplayer, Multiplayer
+  Singleplayer, Host, Client
 };
 
 class GuiGame{
@@ -42,6 +42,7 @@ private:
   Field field;
   Gamestate state;
   Playermode mode;
+  Playermode lastSelectedMultiplayerMode;
   std::string playerName;
   sf::Font PriFont;
   sf::Font SecFont;
