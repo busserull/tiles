@@ -1,8 +1,6 @@
 #include "connection.hpp"
 #include <stdexcept>
 
-#include <iostream> ///
-
 Connection::Connection() : state(ConnectionState::Void), ipAddress(""), port(""){
 
 }
@@ -49,7 +47,6 @@ void Connection::connect(){
     while(status != sf::Socket::Done){
       status = socket.connect(ipAddress, std::stoi(port));
     }
-    std::cout << "Made connection!" << std::endl; ///
   }
 }
 
@@ -57,12 +54,10 @@ void Connection::send(sf::Packet& packet){
   if(socket.send(packet) != sf::Socket::Done){
     throw std::runtime_error("Failed to send packet");
   }
-  std::cout << "Packet sent!" << std::endl; ///
 }
 
 void Connection::receive(sf::Packet& packet){
   if(socket.receive(packet) != sf::Socket::Done){
     throw std::runtime_error("Failed to receive packet");
   }
-  std::cout << "Packet received!" << std::endl; ///
 }
