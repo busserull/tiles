@@ -54,6 +54,7 @@ GuiGame::GuiGame(const GuiGame& other){
   lastSelectedMultiplayerMode = other.lastSelectedMultiplayerMode;
   playerName = other.playerName;
   playerTurn = other.playerTurn;
+  connection = other.connection;
   field = other.field;
   if(!PriFont.loadFromFile(primary_font)){
     throw std::runtime_error("Could not load " + primary_font);
@@ -80,6 +81,7 @@ GuiGame& GuiGame::operator = (const GuiGame& rhs){
   lastSelectedMultiplayerMode = rhs.lastSelectedMultiplayerMode;
   playerName = rhs.playerName;
   playerTurn = rhs.playerTurn;
+  connection = rhs.connection;
   field = rhs.field;
   if(!PriFont.loadFromFile(primary_font)){
     throw std::runtime_error("Could not load " + primary_font);
@@ -347,6 +349,14 @@ void GuiGame::displayWelcomeScreen(){
       window->display();
     }
     // Now create Host
+    connection = Connection(ConnectionState::Host);
+    connection.setPort(inputPort);
+    window->clear();
+    drawEmptyBackground();
+    drawInputBox("", "Getting connected...");
+    window->display();
+    connection.connect();
+    window->clear();
   }
   else if(mode == Playermode::Client){
     playerTurn = false; // Host goes first
@@ -377,6 +387,15 @@ void GuiGame::displayWelcomeScreen(){
       window->display();
     }
     // Now create Client
+    connection = Connection(ConnectionState::Client);
+    connection.setIP(inputIPAddress);
+    connection.setPort(inputPort);
+    window->clear();
+    drawEmptyBackground();
+    drawInputBox("", "Reaching host...");
+    window->display();
+    connection.connect();
+    window->clear();
   }
   else{
     playerTurn = true; // In singleplayer it is always your turn

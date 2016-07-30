@@ -3,8 +3,28 @@
 
 #include <iostream> ///
 
+Connection::Connection() : state(ConnectionState::Void), ipAddress(""), port(""){
+
+}
+
 Connection::Connection(ConnectionState state) : state(state), ipAddress(""), port(""){
 
+}
+
+Connection::Connection(const Connection& other){
+  ipAddress = other.ipAddress;
+  port = other.port;
+  state = other.state;
+}
+
+Connection& Connection::operator = (const Connection& rhs){
+  if(&rhs == this){
+    return *this;
+  }
+  ipAddress = rhs.ipAddress;
+  port = rhs.port;
+  state = rhs.state;
+  return *this;
 }
 
 void Connection::setPort(std::string port){
@@ -33,7 +53,7 @@ void Connection::connect(){
   }
 }
 
-void Connection::send(const sf::Packet& packet){
+void Connection::send(sf::Packet& packet){
   if(socket.send(packet) != sf::Socket::Done){
     throw std::runtime_error("Failed to send packet");
   }

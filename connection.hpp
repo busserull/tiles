@@ -4,16 +4,19 @@
 #include <SFML/Network.hpp>
 
 enum class ConnectionState{
-  Host, Client
+  Host, Client, Void
 };
 
 class Connection{
 public:
+  Connection();
   Connection(ConnectionState state);
+  Connection(const Connection& other);
+  Connection& operator = (const Connection& rhs);
   void setPort(std::string port);
   void setIP(std::string ip);
   void connect();
-  void send(const sf::Packet& packet);
+  void send(sf::Packet& packet);
   void receive(sf::Packet& packet);
 private:
   std::string ipAddress;

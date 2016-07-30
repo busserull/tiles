@@ -1,8 +1,10 @@
 #ifndef GUIGAME_HPP
 #define GUIGAME_HPP
 #include <SFML/Graphics.hpp>
+#include <SFML/Network/Packet.hpp>
 #include <string>
 #include "field.hpp"
+#include "connection.hpp"
 
 enum class Gamestate{
   Won, Lost, Playing, Pending
@@ -44,6 +46,7 @@ private:
   Playermode lastSelectedMultiplayerMode;
   std::string playerName;
   bool playerTurn;
+  Connection connection;
   sf::Font PriFont;
   sf::Font SecFont;
   sf::RenderWindow *window;
