@@ -33,6 +33,10 @@ void Connection::setIP(std::string ip){
   ipAddress = ip;
 }
 
+void Connection::setSocketBlock(bool block){
+  socket.setBlocking(block);
+}
+
 void Connection::connect(){
   if(state == ConnectionState::Host){
     if(listener.listen(std::stoi(port)) != sf::Socket::Done){
@@ -56,8 +60,10 @@ void Connection::send(sf::Packet& packet){
   }
 }
 
-void Connection::receive(sf::Packet& packet){
-  if(socket.receive(packet) != sf::Socket::Done){
-    throw std::runtime_error("Failed to receive packet");
+bool Connection::receive(sf::Packet& packet){
+  sf::Socket::Status status = socket.receive(packet);
+  if(status == sf::Socket::Done){
+    return true;
   }
+  return false;
 }

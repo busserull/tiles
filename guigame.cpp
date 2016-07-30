@@ -356,6 +356,7 @@ void GuiGame::displayWelcomeScreen(){
     drawInputBox("", "Getting connected...");
     window->display();
     connection.connect();
+    connection.setSocketBlock(false);
     window->clear();
   }
   else if(mode == Playermode::Client){
@@ -395,6 +396,7 @@ void GuiGame::displayWelcomeScreen(){
     drawInputBox("", "Reaching host...");
     window->display();
     connection.connect();
+    connection.setSocketBlock(false);
     window->clear();
   }
   else{

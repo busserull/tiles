@@ -15,9 +15,10 @@ public:
   Connection& operator = (const Connection& rhs);
   void setPort(std::string port);
   void setIP(std::string ip);
+  void setSocketBlock(bool block);
   void connect();
   void send(sf::Packet& packet);
-  void receive(sf::Packet& packet);
+  bool receive(sf::Packet& packet);
 private:
   std::string ipAddress;
   std::string port;
