@@ -4,8 +4,6 @@
 #include <string>
 #include "field.hpp"
 
-//#include <ostream> // For operator <<
-
 enum class Gamestate{
   Won, Lost, Playing, Pending
 };
@@ -25,9 +23,7 @@ public:
   void display();
   void updateTitle();
   void displayWelcomeScreen();
-  //friend std::ostream& operator << (std::ostream& stream, GuiGame& object); ///
 private:
-  //bool changed; // For operator <<
   void clickAt(int x, int y, sf::Mouse::Button button);
   void drawLabel(int x, int y);
   void drawEmptyBackground();

@@ -688,13 +688,3 @@ void GuiGame::updateFlagCount(){
   }
   flagsPlaced = flags;
 }
-
-/*
-std::ostream& operator << (std::ostream& stream, GuiGame& object){
-  if(object.changed){
-    stream << object.field << std::endl;
-    object.changed = false;
-  }
-  return stream;
-}
-*/
