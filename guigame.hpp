@@ -32,8 +32,9 @@ private:
   void drawLabel(int x, int y);
   void drawEmptyBackground();
   void drawGameMode();
-  void drawNameBox(std::string inputName);
+  void drawInputBox(std::string inputType,std::string textField);
   bool getUserNameAndMode(std::string& inputName, bool& changed);
+  bool getUserInput(std::string& inputString, int sizeLimit);
   void updateFlagCount();
   int height;
   int width;

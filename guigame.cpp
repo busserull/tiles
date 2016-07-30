@@ -1,4 +1,5 @@
 #include "guigame.hpp"
+#include "utilities.hpp"
 #include <stdexcept>
 
 namespace{
@@ -274,11 +275,56 @@ void GuiGame::displayWelcomeScreen(){
     window->clear();
     drawEmptyBackground();
     drawGameMode();
-    drawNameBox(inputName);
+    drawInputBox("name:", inputName);
     window->display();
     inputNameSet = getUserNameAndMode(inputName, nameChanged);
   }
   playerName = inputName;
+  if(mode == Playermode::Host){
+    std::string inputPort = "55001";
+    bool inputSet = false;
+    while(!inputSet){
+      window->clear();
+      drawEmptyBackground();
+      drawInputBox("port:", inputPort);
+      inputSet = getUserInput(inputPort, 10);
+      ut::stripNonPortLetters(inputPort);
+      if(!ut::validPort(inputPort)){
+        inputSet = false;
+      }
+      window->display();
+    }
+    // Now create Host
+  }
+  else if(mode == Playermode::Client){
+    std::string inputIPAddress = "127.0.0.1";
+    std::string inputPort = "55001";
+    bool inputSet = false;
+    while(!inputSet){
+      window->clear();
+      drawEmptyBackground();
+      drawInputBox("ip:", inputIPAddress);
+      inputSet = getUserInput(inputIPAddress, 15);
+      ut::stripNonIPLetters(inputIPAddress);
+      if(!ut::validIP(inputIPAddress)){
+        inputSet = false;
+      }
+      window->display();
+    }
+    inputSet = false;
+    while(!inputSet){
+      window->clear();
+      drawEmptyBackground();
+      drawInputBox("port:", inputPort);
+      inputSet = getUserInput(inputPort, 10);
+      ut::stripNonPortLetters(inputPort);
+      if(!ut::validPort(inputPort)){
+        inputSet = false;
+      }
+      window->display();
+    }
+    // Now create Client
+  }
 }
 
 void GuiGame::clickAt(int x, int y, sf::Mouse::Button button){
@@ -453,7 +499,7 @@ void GuiGame::drawGameMode(){
   }
 }
 
-void GuiGame::drawNameBox(std::string inputName){
+void GuiGame::drawInputBox(std::string inputType, std::string textField){
   sf::RectangleShape box;
   box.setSize(sf::Vector2f(width * tile_size, height * tile_size / 6));
   box.setFillColor(open_tile_color);
@@ -467,9 +513,9 @@ void GuiGame::drawNameBox(std::string inputName){
   position -= sf::Vector2f(width * tile_size / 2, height * tile_size / 12);
   sf::Text nameLabel;
   nameLabel.setFont(SecFont);
-  nameLabel.setCharacterSize(height * tile_size / 16);
+  nameLabel.setCharacterSize(height * tile_size / 14);
   nameLabel.setStyle(sf::Text::Bold);
-  nameLabel.setString("name:");
+  nameLabel.setString(inputType);
   nameLabel.setColor(open_tile_color);
   {
     sf::FloatRect boundingBox = nameLabel.getLocalBounds();
@@ -488,7 +534,7 @@ void GuiGame::drawNameBox(std::string inputName){
     sf::FloatRect boundingBox = userName.getLocalBounds();
     userName.setOrigin(boundingBox.left, boundingBox.top + boundingBox.height / 2);
   }
-  userName.setString(inputName);
+  userName.setString(textField);
   userName.setPosition(position + sf::Vector2f(2 * border_size, height * tile_size / 12));
   window->draw(userName);
 }
@@ -601,6 +647,32 @@ bool GuiGame::getUserNameAndMode(std::string& inputName, bool& changed){
     char lower = inputName[0];
     inputName.pop_back();
     inputName.push_back(toupper(lower));
+  }
+  return false;
+}
+
+bool GuiGame::getUserInput(std::string& inputString, int sizeLimit){
+  sf::Event event;
+  while(window->pollEvent(event)){
+    if(event.type == sf::Event::EventType::KeyPressed){
+      switch(event.key.code){
+        case sf::Keyboard::Key::BackSpace:
+          if(inputString != ""){
+            inputString.pop_back();
+          }
+          break;
+        case sf::Keyboard::Key::Return:
+          return true;
+          break;
+      }
+    }
+    else if(event.type == sf::Event::EventType::TextEntered){
+      sf::Event::TextEvent text = event.text;
+      // Only accept printable ascii characters
+      if(text.unicode >= ' ' && text.unicode <= '~' && inputString.length() < sizeLimit){
+        inputString.push_back(text.unicode);
+      }
+    }
   }
   return false;
 }
