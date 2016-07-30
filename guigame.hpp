@@ -15,6 +15,8 @@ enum class Playermode{
 class GuiGame{
 public:
   GuiGame(int height, int width, int mines);
+  GuiGame(const GuiGame& other);
+  GuiGame& operator = (const GuiGame& rhs);
   ~GuiGame();
   bool isOpen() const;
   void getEvent();

@@ -44,6 +44,55 @@ flagsPlaced(0), state(Gamestate::Pending), mode(Playermode::Singleplayer), lastS
   "Tiles", sf::Style::Titlebar);
 }
 
+GuiGame::GuiGame(const GuiGame& other){
+  height = other.height;
+  width = other.width;
+  mines = other.mines;
+  flagsPlaced = other.flagsPlaced;
+  state = other.state;
+  mode = other.mode;
+  lastSelectedMultiplayerMode = other.lastSelectedMultiplayerMode;
+  playerName = other.playerName;
+  field = other.field;
+  if(!PriFont.loadFromFile(primary_font)){
+    throw std::runtime_error("Could not load " + primary_font);
+  }
+  if(!SecFont.loadFromFile(secondary_font)){
+    throw std::runtime_error("Could not load " + secondary_font);
+  }
+
+  delete window;
+  window = new sf::RenderWindow(sf::VideoMode(width * tile_size + border_size + side_bar_width, heigt * tile_size + border_size),
+  "Tiles", sf::Style::Titlebar);
+}
+
+GuiGame& GuiGame::operator = (const GuiGame& rhs){
+  if(&rhs == this){
+    return *this;
+  }
+  height = rhs.height;
+  width = rhs.width;
+  mines = rhs.mines;
+  flagsPlaced = rhs.flagsPlaced;
+  state = rhs.state;
+  mode = rhs.mode;
+  lastSelectedMultiplayerMode = rhs.lastSelectedMultiplayerMode;
+  playerName = rhs.playerName;
+  field = rhs.field;
+  f(!PriFont.loadFromFile(primary_font)){
+    throw std::runtime_error("Could not load " + primary_font);
+  }
+  if(!SecFont.loadFromFile(secondary_font)){
+    throw std::runtime_error("Could not load " + secondary_font);
+  }
+
+  delete window;
+  window = new sf::RenderWindow(sf::VideoMode(width * tile_size + border_size + side_bar_width, heigt * tile_size + border_size),
+  "Tiles", sf::Style::Titlebar);
+
+  return (*this);
+}
+
 GuiGame::~GuiGame(){
   delete window;
   window = nullptr;
