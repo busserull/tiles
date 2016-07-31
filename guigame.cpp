@@ -186,18 +186,66 @@ void GuiGame::getEvent(){
 }
 
 void GuiGame::updateGameState(){
-  if(field.hasMinesBeenPlaced() == false){
-    state = Gamestate::Pending;
-  }
-  else{
-    if(field.hasMinesBeenOpened()){
-      state = Gamestate::Lost;
-    }
-    else if(field.onlyMinesLeft()){
-      state = Gamestate::Won;
+  if(type == Gametype::Casual){
+    if(field.hasMinesBeenPlaced() == false){
+      state = Gamestate::Pending;
     }
     else{
-      state = Gamestate::Playing;
+      if(field.hasMinesBeenOpened()){
+        state = Gamestate::Lost;
+      }
+      else if(field.onlyMinesLeft()){
+        state = Gamestate::Won;
+      }
+      else{
+        state = Gamestate::Playing;
+      }
+    }
+  }
+  else if(type == Gametype::SuddenDeath){
+    if(field.hasMinesBeenPlaced() == false){
+      state = Gamestate::Pending;
+    }
+    else{
+      if(field.hasMinesBeenOpened() && playerTurn){
+        state = Gamestate::Won;
+      }
+      else if(field.hasMinesBeenOpened() && !playerTurn){
+        state = Gamestate::Lost;
+      }
+      else if(field.onlyMinesLeft() && mode == Playermode::Host){
+        // Max mines in sudden death is half of all tiles
+        if(mines < height * width / 2){
+          mines++;
+          sf::Packet packet;
+          packet << "increaseMines";
+          connection.send(packet);
+        }
+        else{
+          sf::Packet packet;
+          packet << "newGame";
+          connection.send(packet);
+        }
+        field = Field(height, width, mines);
+        int x = ut::randInclusive(0, width);
+        int y = ut::randInclusive(0, height);
+        field.setOpen(x, y);
+        connection.send(x, y);
+        if(!playerTurn){
+          sf::Packet packet;
+          packet << "playerTurn" << "true";
+          connection.send(packet);
+        }
+        else{
+          sf::Packet packet;
+          packet << "playerTurn" << "false";
+          connection.send(packet);
+        }
+        state = Gamestate::Playing;
+      }
+      else{
+        state = Gamestate::Playing;
+      }
     }
   }
 }
@@ -385,11 +433,27 @@ void GuiGame::updateTitle(){
   else{
     if(type == Gametype::Casual){
       title = "Casual: ";
-      title += playerTurn?"Your turn":("Waiting for " + connection.getOpponentName());
+      if(state == Gamestate::Won){
+        title += "Victory";
+      }
+      else if(state == Gamestate::Lost){
+        title += "Defeat";
+      }
+      else{
+        title += playerTurn?"Your turn":("Waiting for " + connection.getOpponentName());
+      }
     }
     else if(type == Gametype::SuddenDeath){
       title = "Sudden Death: ";
-      title += playerTurn?"Your turn":("Waiting for " + connection.getOpponentName());
+      if(state == Gamestate::Won){
+        title += connection.getOpponentName() + " blew up";
+      }
+      else if(state == Gamestate::Lost){
+        title += "Defeat";
+      }
+      else{
+        title += playerTurn?"Your turn":("Waiting for " + connection.getOpponentName());
+      }
     }
   }
   window->setTitle(title);
@@ -550,7 +614,7 @@ void GuiGame::clickAt(int x, int y, sf::Mouse::Button button){
           }
         }
       }
-      else if(button == sf::Mouse::Button::Right){ // Flag
+      else if(button == sf::Mouse::Button::Right && type != Gametype::SuddenDeath){ // Flag
         if(field.isFlagged(x, y)){
           if(field.getFlagger(x, y) == playerName){
             field.toggleFlag(x, y, playerName);
@@ -585,11 +649,22 @@ void GuiGame::clickAt(int x, int y, sf::Mouse::Button button){
     else if(y > height * tile_size * 2 / 3){ // Clicked on minecounter
       if(state != Gamestate::Playing && mode != Playermode::Client){ // Allow changing mines
         if(button == sf::Mouse::Button::Left){
-          if(mines < width * height - 9){
-            mines++;
-            if(mode != Playermode::Singleplayer){
-              playerTurn = true;
-              connection.send("increaseMines");
+          if(type != Gametype::SuddenDeath){
+            if(mines < width * height - 9){
+              mines++;
+              if(mode != Playermode::Singleplayer){
+                playerTurn = true;
+                connection.send("increaseMines");
+              }
+            }
+          }
+          else if(type == Gametype::SuddenDeath){
+            if(mines < width * height / 2){
+              mines++;
+              if(mode != Playermode::Singleplayer){
+                playerTurn = true;
+                connection.send("increaseMines");
+              }
             }
           }
         }
@@ -1009,6 +1084,16 @@ void GuiGame::processPacket(sf::Packet& packet){
     }
     else if(gametype == "sudden"){
       type = Gametype::SuddenDeath;
+    }
+  }
+  else if(messageType == "playerTurn"){
+    std::string adverb;
+    packet >> adverb;
+    if(adverb == "true"){
+      playerTurn = true;
+    }
+    else{
+      playerTurn = false;
     }
   }
 }

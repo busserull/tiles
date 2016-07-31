@@ -13,7 +13,18 @@ automatically enforces this.
 
 If you chose multiplayer as client, you are not allowed to
 have the same name as the host - the game will ask you to
-set a new one if this occurs.
+set a new one if this occurs. If you choose host, you will
+then be prompted to choose between game modes - there are two.
+In 'Casual', the two players play together, making one move
+each per round, both players lose if a mine is opened - and
+both players win if all non-mine tiles are opened.
+In 'Sudden Death', the two players are pitched against each other,
+whenever a board is fully cleared, the mine counter get increased
+and a new game with one more mine begins - then, a tile gets
+opened at random, always leaving a started game to the two players.
+If a player opens a mine, that player loses, and the other player
+wins. In 'Sudden Death', no flags are allowd, forcing both players
+to keep track of where there might be mines on their own.
 
 When the game starts, you will see a field of tiles underneath
 which is either a mine or not. A left click will open the clicked
@@ -87,7 +98,6 @@ also a little bit of polish to be done.
 
 ### Coming features
 * File statistics
-* Sudden-death for multiplayer
 * Store last used name and IP/port
 
 ### 3rd party components
