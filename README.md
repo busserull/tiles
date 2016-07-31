@@ -87,15 +87,6 @@ as long as no game has been started:
 * Left - Decrease width by one tile.
 * Right - Increase width by one tile.
 
-### Description
-The game lets the player choose between Singleplayer,
-Multiplayer host, or Multiplayer client - as well as
-choosing a name.
-
-Both modes, single- and multiplayer are almost done,
-though some features remain unimplemented. There is
-also a little bit of polish to be done.
-
 ### Coming features
 * File statistics
 * Store last used name and IP/port
