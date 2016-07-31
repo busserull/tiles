@@ -2,6 +2,8 @@
 #include "utilities.hpp"
 #include <stdexcept>
 
+#include <iostream>
+
 namespace{
   const int tile_size = 40;
   const int border_size = 2;
@@ -108,19 +110,25 @@ bool GuiGame::isOpen() const{
 
 void GuiGame::getEvent(){
   sf::Event event;
-  while(window->pollEvent(event)){
-    switch(event.type){
-      case sf::Event::EventType::MouseButtonPressed:
-        clickAt(event.mouseButton.x, event.mouseButton.y, event.mouseButton.button);
-        //changed = true; // For operator <<
-        break;
-      case sf::Event::EventType::KeyPressed:
-        switch(event.key.code){
-          case sf::Keyboard::Key::Q:
-            window->close();
-        }
+    while(window->pollEvent(event)){
+      switch(event.type){
+        case sf::Event::EventType::MouseButtonPressed:
+          clickAt(event.mouseButton.x, event.mouseButton.y, event.mouseButton.button);
+          break;
+        case sf::Event::EventType::KeyPressed:
+          switch(event.key.code){
+            case sf::Keyboard::Key::Q:
+              window->close();
+          }
+      }
     }
-  }
+    if(mode != Playermode::Singleplayer){
+      sf::Packet packet;
+      if(connection.receive(packet)){
+        // Process received packet
+        processPacket(packet);
+      }
+    }
 }
 
 void GuiGame::updateGameState(){
@@ -412,20 +420,32 @@ void GuiGame::clickAt(int x, int y, sf::Mouse::Button button){
       y /= tile_size;
       y = height - y - 1;
       x /= tile_size;
-      if(button == sf::Mouse::Button::Left){ // Open
+      if(button == sf::Mouse::Button::Left && playerTurn){ // Open
         if(field.isFlagged(x, y) == false || field.getFlagger(x, y) != playerName){
           field.setOpen(x, y);
+          if(mode != Playermode::Singleplayer){
+            // Send open message
+            connection.send(x, y);
+          }
         }
       }
       else if(button == sf::Mouse::Button::Right){ // Flag
         if(field.isFlagged(x, y)){
           if(field.getFlagger(x, y) == playerName){
             field.toggleFlag(x, y, playerName);
+            if(mode != Playermode::Singleplayer){
+              // Send flag message
+              connection.send(x, y, playerName);
+            }
           }
         }
         else{
           if(flagsPlaced < mines && !field.isOpen(x, y) && state != Gamestate::Pending){
             field.toggleFlag(x, y, playerName);
+            if(mode != Playermode::Singleplayer){
+              // Send flag message
+              connection.send(x, y, playerName);
+            }
           }
         }
       }
@@ -764,4 +784,15 @@ void GuiGame::updateFlagCount(){
     }
   }
   flagsPlaced = flags;
+}
+
+void GuiGame::processPacket(sf::Packet& packet){
+  std::string messageType;
+  packet >> messageType;
+  if(messageType == "flag"){
+    std::cout << "FLAG" << std::endl;
+  }
+  else if(messageType == "open"){
+    std::cout << "OPEN" << std::endl;
+  }
 }

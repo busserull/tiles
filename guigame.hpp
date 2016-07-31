@@ -36,6 +36,7 @@ private:
   bool getUserNameAndMode(std::string& inputName, bool& changed);
   bool getUserInput(std::string& inputString, int sizeLimit);
   void updateFlagCount();
+  void processPacket(sf::Packet& packet);
   int height;
   int width;
   int mines;

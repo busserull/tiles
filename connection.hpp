@@ -18,6 +18,8 @@ public:
   void setSocketBlock(bool block);
   void connect();
   void send(sf::Packet& packet);
+  void send(int x, int y, std::string flagger); // Flag
+  void send(int x, int y); // Open
   bool receive(sf::Packet& packet);
 private:
   std::string ipAddress;

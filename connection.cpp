@@ -60,6 +60,29 @@ void Connection::send(sf::Packet& packet){
   }
 }
 
+// Flag
+void Connection::send(int x, int y, std::string flagger){
+  if(flagger == ""){
+    throw std::runtime_error("No flagger name given");
+  }
+  sf::Uint32 xPos, yPos;
+  xPos = x;
+  yPos = y;
+  sf::Packet packet;
+  packet << "flag" << flagger << xPos << yPos;
+  send(packet);
+}
+
+// Open
+void Connection::send(int x, int y){
+  sf::Uint32 xPos, yPos;
+  xPos = x;
+  yPos = y;
+  sf::Packet packet;
+  packet << "open" << xPos << yPos;
+  send(packet);
+}
+
 bool Connection::receive(sf::Packet& packet){
   sf::Socket::Status status = socket.receive(packet);
   if(status == sf::Socket::Done){
