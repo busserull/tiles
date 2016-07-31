@@ -77,7 +77,7 @@ it is at any given time. Even though you can only open tiles
 when it is your turn, you are free to flag closed tiles
 whenever you wish.
 
-*Additional controls*
+*Additional controls*:
 Q will at any time except for text entry close the window.
 If you are either playing singleplayer or as host, the
 board can be resized with the keyboard arrows as follows
@@ -89,7 +89,6 @@ as long as no game has been started:
 
 ### Coming features
 * File statistics
-* Store last used name and IP/port
 
 ### 3rd party components
 SFML is required as it is used for both graphics and

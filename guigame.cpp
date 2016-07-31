@@ -495,7 +495,7 @@ void GuiGame::displayWelcomeScreen(){
     }
     // Get port to listen on
     playerTurn = true; // Host goes first
-    std::string inputPort = "55001";
+    std::string inputPort = ut::getLastUsedPort();
     bool inputSet = false;
     while(!inputSet){
       window->clear();
@@ -508,6 +508,7 @@ void GuiGame::displayWelcomeScreen(){
       }
       window->display();
     }
+    ut::storePort(inputPort);
     // Now create Host
     connection = Connection(ConnectionState::Host);
     connection.setConnectionName(playerName);
@@ -538,8 +539,8 @@ void GuiGame::displayWelcomeScreen(){
   }
   else if(mode == Playermode::Client){
     playerTurn = false; // Host goes first
-    std::string inputIPAddress = "127.0.0.1";
-    std::string inputPort = "55001";
+    std::string inputIPAddress = ut::getLastUsedIP();
+    std::string inputPort = ut::getLastUsedPort();
     bool inputSet = false;
     while(!inputSet){
       window->clear();
@@ -564,6 +565,8 @@ void GuiGame::displayWelcomeScreen(){
       }
       window->display();
     }
+    ut::storeIP(inputIPAddress);
+    ut::storePort(inputPort);
     // Now create Client
     connection = Connection(ConnectionState::Client);
     connection.setConnectionName(playerName);

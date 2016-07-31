@@ -14,4 +14,12 @@ namespace ut{
   void stripNonIPLetters(std::string& ipAddress);
 
   void formatPlayerName(std::string& playerName);
+
+  void storeIP(std::string ipAddress);
+
+  void storePort(std::string port);
+
+  std::string getLastUsedIP();
+
+  std::string getLastUsedPort();
 }

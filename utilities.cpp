@@ -2,6 +2,12 @@
 #include <cstdlib>
 #include <ctime>
 #include <cctype>
+#include <fstream>
+
+namespace{
+  const std::string ip_store_file = ".lastIP.txt";
+  const std::string port_store_file = ".lastPort.txt";
+}
 
 namespace ut{
   int randInclusive(int lower, int upper){
@@ -122,5 +128,39 @@ namespace ut{
       onlyLetters[0] = toupper(onlyLetters[0]);
     }
     playerName = onlyLetters;
+  }
+
+  void storeIP(std::string ipAddress){
+    std::ofstream out(ip_store_file);
+    out << ipAddress << std::endl;
+    out.close();
+  }
+
+  void storePort(std::string port){
+    std::ofstream out(port_store_file);
+    out << port << std::endl;
+    out.close();
+  }
+
+  std::string getLastUsedIP(){
+    std::ifstream in(ip_store_file);
+    if(in.fail()){
+      return "127.0.0.1";
+    }
+    std::string lastIP;
+    getline(in, lastIP);
+    return lastIP;
+    in.close();
+  }
+
+  std::string getLastUsedPort(){
+    std::ifstream in(port_store_file);
+    if(in.fail()){
+      return "55001";
+    }
+    std::string lastPort;
+    getline(in, lastPort);
+    return lastPort;
+    in.close();
   }
 }
