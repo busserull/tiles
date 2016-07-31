@@ -83,6 +83,12 @@ void Connection::send(int x, int y){
   send(packet);
 }
 
+void Connection::send(std::string command){
+  sf::Packet packet;
+  packet << command;
+  send(packet);
+}
+
 bool Connection::receive(sf::Packet& packet){
   sf::Socket::Status status = socket.receive(packet);
   if(status == sf::Socket::Done){

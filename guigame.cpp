@@ -2,8 +2,6 @@
 #include "utilities.hpp"
 #include <stdexcept>
 
-#include <iostream>
-
 namespace{
   const int tile_size = 40;
   const int border_size = 2;
@@ -426,6 +424,7 @@ void GuiGame::clickAt(int x, int y, sf::Mouse::Button button){
           if(mode != Playermode::Singleplayer){
             // Send open message
             connection.send(x, y);
+            playerTurn = false; // Done your move for the turn
           }
         }
       }
@@ -452,20 +451,34 @@ void GuiGame::clickAt(int x, int y, sf::Mouse::Button button){
     }
   }
   else{ // Clicked on sidebar
-    if(y <= height * tile_size / 3){ // Clicked on indicator field
+    if(y <= height * tile_size / 3 && mode != Playermode::Client){ // Clicked on indicator field
       state = Gamestate::Pending;
       flagsPlaced = 0;
       field = Field(height, width, mines);
+      if(mode != Playermode::Singleplayer){
+        playerTurn = true;
+        connection.send("newGame");
+      }
     }
     else if(y > height * tile_size * 2 / 3){ // Clicked on minecounter
-      if(state != Gamestate::Playing){ // Allow changing mines
+      if(state != Gamestate::Playing && mode != Playermode::Client){ // Allow changing mines
         if(button == sf::Mouse::Button::Left){
-          if(mines < width * height - 9)
+          if(mines < width * height - 9){
             mines++;
+            if(mode != Playermode::Singleplayer){
+              playerTurn = true;
+              connection.send("increaseMines");
+            }
+          }
         }
         else{
-          if(mines > 0)
+          if(mines > 0){
             mines--;
+            if(mode != Playermode::Singleplayer){
+              playerTurn = true;
+              connection.send("decreaseMines");
+            }
+          }
         }
       }
       if(state == Gamestate::Pending){
@@ -790,9 +803,32 @@ void GuiGame::processPacket(sf::Packet& packet){
   std::string messageType;
   packet >> messageType;
   if(messageType == "flag"){
-    std::cout << "FLAG" << std::endl;
+    sf::Uint32 xPos, yPos;
+    std::string flagger;
+    packet >> flagger >> xPos >> yPos;
+    field.toggleFlag(xPos, yPos, flagger);
+    updateFlagCount();
   }
   else if(messageType == "open"){
-    std::cout << "OPEN" << std::endl;
+    playerTurn = true; // Other player done their move
+    sf::Uint32 xPos, yPos;
+    packet >> xPos >> yPos;
+    field.setOpen(xPos, yPos);
+  }
+  else if(messageType == "increaseMines"){
+    playerTurn = false;
+    mines++;
+    field = Field(height, width, mines);
+  }
+  else if(messageType == "decreaseMines"){
+    playerTurn = false;
+    mines--;
+    field = Field(height, width, mines);
+  }
+  else if(messageType == "newGame"){
+    playerTurn = false;
+    state = Gamestate::Pending;
+    flagsPlaced = 0;
+    field = Field(height, width, mines);
   }
 }
