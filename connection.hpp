@@ -23,10 +23,12 @@ public:
   void send(int x, int y); // Open
   void send(std::string command); // String commands
   bool receive(sf::Packet& packet);
+  std::string getOpponentName() const;
 private:
   std::string ipAddress;
   std::string port;
   std::string connectionName;
+  std::string opponentName;
   sf::TcpListener listener;
   sf::TcpSocket socket;
   bool alreadyConnected;

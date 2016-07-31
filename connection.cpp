@@ -13,6 +13,7 @@ Connection::Connection(const Connection& other){
   ipAddress = other.ipAddress;
   port = other.port;
   connectionName = other.connectionName;
+  opponentName = other.opponentName;
   alreadyConnected = false; // Because socket is non-copyable
   state = other.state;
 }
@@ -24,6 +25,7 @@ Connection& Connection::operator = (const Connection& rhs){
   ipAddress = rhs.ipAddress;
   port = rhs.port;
   connectionName = rhs.connectionName;
+  opponentName = rhs.opponentName;
   alreadyConnected = false; // Because socket is non-copyable
   state = rhs.state;
   return *this;
@@ -67,6 +69,10 @@ bool Connection::connect(){
       socket.receive(packet);
       packet >> clientHasDifferentName;
     }
+    // Receive client name
+    sf::Packet packet;
+    socket.receive(packet);
+    packet >> opponentName;
     return true;
   }
   else{
@@ -81,6 +87,7 @@ bool Connection::connect(){
     socket.receive(packet);
     std::string hostName;
     packet >> hostName;
+    opponentName = hostName;
     if(hostName == connectionName){
       packet.clear();
       packet << false;
@@ -90,6 +97,10 @@ bool Connection::connect(){
     else{
       packet.clear();
       packet << true;
+      socket.send(packet);
+      // Send clients name to server
+      packet.clear();
+      packet << connectionName;
       socket.send(packet);
       return true;
     }
@@ -137,4 +148,8 @@ bool Connection::receive(sf::Packet& packet){
     return true;
   }
   return false;
+}
+
+std::string Connection::getOpponentName() const {
+  return opponentName;
 }

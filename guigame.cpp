@@ -152,6 +152,7 @@ Gamestate GuiGame::getState() const {
 
 void GuiGame::display(){
   window->clear();
+  updateTitle();
   // Start drawing tiles
   for(int x = 0; x < width; x++){
     for(int y = 0; y < height; y++){
@@ -314,14 +315,15 @@ void GuiGame::updateTitle(){
   std::string title;
   switch(mode){
     case Playermode::Singleplayer:
-      title = "Singleplayer";
+      title = "Singleplayer: " + playerName;
       break;
-    case Playermode::Client:
-      title = "Client";
-      break;
-    case Playermode::Host:
-      title = "Host";
-      break;
+    default:
+      if(playerTurn){
+        title = "Multiplayer: Your turn!";
+      }
+      else{
+        title = "Multiplayer: Waiting for " + connection.getOpponentName();
+      }
   }
   window->setTitle(title);
 }
