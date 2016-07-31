@@ -3,6 +3,7 @@
 #include <string>
 #include <ostream>
 #include <ctime>
+#include <SFML/Network/Packet.hpp>
 
 struct Tile{
   bool isOpen;
@@ -33,6 +34,8 @@ public:
   bool hasMinesBeenOpened() const;
   int getSecondsSinceStart() const;
   friend std::ostream& operator << (std::ostream& stream, const Field& board);
+  friend sf::Packet& operator << (sf::Packet& packet, const Field& board);
+  friend sf::Packet& operator >> (sf::Packet& packet, Field& board);
 private:
   Tile *field;
   int height;

@@ -202,6 +202,35 @@ std::ostream& operator << (std::ostream& stream, const Field& board){
   return stream;
 }
 
+sf::Packet& operator << (sf::Packet& packet, const Field& board){
+  for(int x = 0; x < board.width; x++){
+    for(int y = 0; y < board.height; y++){
+      int index = y * board.width + x;
+      packet << board.field[index].isOpen;
+      packet << board.field[index].isMine;
+      packet << board.field[index].isFlagged;
+      packet << board.field[index].flagger;
+    }
+  }
+  return packet;
+}
+
+sf::Packet& operator >> (sf::Packet& packet, Field& board){
+  for(int x = 0; x < board.width; x++){
+    for(int y = 0; y < board.height; y++){
+      int index = y * board.width + x;
+      packet >> board.field[index].isOpen;
+      packet >> board.field[index].isMine;
+      packet >> board.field[index].isFlagged;
+      packet >> board.field[index].flagger;
+    }
+  }
+  board.initializeMineCount();
+  board.startTime = time(nullptr);
+  board.minesPlaced = true;
+  return packet;
+}
+
 void Field::initializeMineCount(){
   for(int x = 0; x < width; x++){
     for(int y = 0; y < height; y++){
