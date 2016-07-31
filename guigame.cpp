@@ -287,25 +287,35 @@ void GuiGame::display(){
     mineLabel.setString("30"); // Stop 'mines' label from jumping up and down as mines are changed
     boundingBox = mineLabel.getLocalBounds();
     int labelOffset = height * tile_size * 5 / 6 + boundingBox.height * 2 / 3;
-    sf::Text minesMutable;
-    minesMutable.setFont(SecFont);
-    minesMutable.setCharacterSize(height * tile_size / 24);
-    if(state != Gamestate::Playing){
-      minesMutable.setColor(side_bar_mutable_color);
+    sf::Text minesOrFlags;
+    minesOrFlags.setFont(SecFont);
+    minesOrFlags.setCharacterSize(height * tile_size / 24);
+    if(state != Gamestate::Playing && mode != Playermode::Client){
+      minesOrFlags.setColor(side_bar_mutable_color);
     }
     else{
-      minesMutable.setColor(side_bar_color);
+      minesOrFlags.setColor(side_bar_color);
     }
-    if(mines - flagsPlaced == 1){
-      minesMutable.setString("mine");
+    if(mines - flagsPlaced == 1){ // One flag left to place
+      if(mode == Playermode::Singleplayer || state == Gamestate::Pending){
+        minesOrFlags.setString("mine");
+      }
+      else{
+        minesOrFlags.setString("flag");
+      }
     }
-    else{
-      minesMutable.setString("mines");
+    else{ // Different amount of flags
+      if(mode == Playermode::Singleplayer || state == Gamestate::Pending){
+        minesOrFlags.setString("mines");
+      }
+      else{
+        minesOrFlags.setString("flags");
+      }
     }
-    boundingBox = minesMutable.getLocalBounds();
-    minesMutable.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top);
-    minesMutable.setPosition(width * tile_size + side_bar_width / 2, labelOffset);
-    window->draw(minesMutable);
+    boundingBox = minesOrFlags.getLocalBounds();
+    minesOrFlags.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top);
+    minesOrFlags.setPosition(width * tile_size + side_bar_width / 2, labelOffset);
+    window->draw(minesOrFlags);
   }
   // Stop drawing sidebar
   window->display();
@@ -809,7 +819,7 @@ void GuiGame::updateFlagCount(){
   int flags = 0;
   for(int x = 0; x < width; x++){
     for(int y = 0; y < height; y++){
-      if(field.isFlagged(x, y) && field.getFlagger(x, y) == playerName){
+      if(field.isFlagged(x, y) && field.getFlagger(x, y) == playerName && !field.isOpen(x, y)){
         flags++;
       }
     }
@@ -832,6 +842,7 @@ void GuiGame::processPacket(sf::Packet& packet){
     sf::Uint32 xPos, yPos;
     packet >> xPos >> yPos;
     field.setOpen(xPos, yPos);
+    updateFlagCount();
   }
   else if(messageType == "increaseMines"){
     playerTurn = false;
