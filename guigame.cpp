@@ -379,17 +379,18 @@ void GuiGame::display(){
 
 void GuiGame::updateTitle(){
   std::string title;
-  switch(mode){
-    case Playermode::Singleplayer:
-      title = "Singleplayer: " + playerName;
-      break;
-    default:
-      if(playerTurn){
-        title = "Multiplayer: Your turn!";
-      }
-      else{
-        title = "Multiplayer: Waiting for " + connection.getOpponentName();
-      }
+  if(mode == Playermode::Singleplayer){
+    title = "Casual: " + playerName;
+  }
+  else{
+    if(type == Gametype::Casual){
+      title = "Casual: ";
+      title += playerTurn?"Your turn":("Waiting for " + connection.getOpponentName());
+    }
+    else if(type == Gametype::SuddenDeath){
+      title = "Sudden Death: ";
+      title += playerTurn?"Your turn":("Waiting for " + connection.getOpponentName());
+    }
   }
   window->setTitle(title);
 }
@@ -454,6 +455,22 @@ void GuiGame::displayWelcomeScreen(){
     connection.connect();
     connection.setSocketBlock(false);
     window->clear();
+    // Send game type to client
+    {
+      sf::Packet packet;
+      std::string command = "gametype";
+      std::string adverb;
+      switch(type){
+        case Gametype::Casual:
+          adverb = "casual";
+          break;
+        case Gametype::SuddenDeath:
+          adverb = "sudden";
+          break;
+      }
+      packet << command << adverb;
+      connection.send(packet);
+    }
   }
   else if(mode == Playermode::Client){
     playerTurn = false; // Host goes first
@@ -983,6 +1000,16 @@ void GuiGame::processPacket(sf::Packet& packet){
       width++;
     }
     remakeWindow();
+  }
+  else if(messageType == "gametype"){
+    std::string gametype;
+    packet >> gametype;
+    if(gametype == "casual"){
+      type = Gametype::Casual;
+    }
+    else if(gametype == "sudden"){
+      type = Gametype::SuddenDeath;
+    }
   }
 }
 
