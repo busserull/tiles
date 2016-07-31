@@ -230,7 +230,9 @@ void GuiGame::updateGameState(){
         int x = ut::randInclusive(0, width);
         int y = ut::randInclusive(0, height);
         field.setOpen(x, y);
-        connection.send(x, y);
+        sf::Packet packet;
+        packet << "completeBoard" << field;
+        connection.send(packet);
         if(!playerTurn){
           sf::Packet packet;
           packet << "playerTurn" << "true";
@@ -609,10 +611,18 @@ void GuiGame::clickAt(int x, int y, sf::Mouse::Button button){
       x /= tile_size;
       if(button == sf::Mouse::Button::Left && playerTurn){ // Open
         if(field.isFlagged(x, y) == false || field.getFlagger(x, y) != playerName){
+          bool minesPlaced = field.hasMinesBeenPlaced();
           field.setOpen(x, y);
           if(mode != Playermode::Singleplayer){
             // Send open message
-            connection.send(x, y);
+            if(mode == Playermode::Host && !minesPlaced){
+              sf::Packet packet;
+              packet << "completeBoard" << field;
+              connection.send(packet);
+            }
+            else{
+              connection.send(x, y);
+            }
             playerTurn = false; // Done your move for the turn
           }
         }
@@ -1098,6 +1108,10 @@ void GuiGame::processPacket(sf::Packet& packet){
     else{
       playerTurn = false;
     }
+  }
+  else if(messageType == "completeBoard"){
+    packet >> field;
+    playerTurn = true;
   }
 }
 
