@@ -203,6 +203,8 @@ std::ostream& operator << (std::ostream& stream, const Field& board){
 }
 
 sf::Packet& operator << (sf::Packet& packet, const Field& board){
+  sf::Uint32 openTiles = board.openTiles;
+  packet << openTiles;
   for(int x = 0; x < board.width; x++){
     for(int y = 0; y < board.height; y++){
       int index = y * board.width + x;
@@ -216,6 +218,9 @@ sf::Packet& operator << (sf::Packet& packet, const Field& board){
 }
 
 sf::Packet& operator >> (sf::Packet& packet, Field& board){
+  sf::Uint32 openTiles;
+  packet >> openTiles;
+  board.openTiles = openTiles;
   for(int x = 0; x < board.width; x++){
     for(int y = 0; y < board.height; y++){
       int index = y * board.width + x;
@@ -228,6 +233,10 @@ sf::Packet& operator >> (sf::Packet& packet, Field& board){
   board.initializeMineCount();
   board.startTime = time(nullptr);
   board.minesPlaced = true;
+  if(board.onlyMinesLeft()){
+    board.endTime = time(nullptr);
+    board.endTimeSet = true;
+  }
   return packet;
 }
 
