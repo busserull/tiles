@@ -117,6 +117,35 @@ void GuiGame::getEvent(){
           switch(event.key.code){
             case sf::Keyboard::Key::Q:
               window->close();
+              break;
+            case sf::Keyboard::Key::Right:
+              if(state != Gamestate::Playing && mode != Playermode::Client){
+                width++;
+                remakeWindow();
+                // Send remake message
+              }
+              break;
+            case sf::Keyboard::Key::Left:
+              if(state != Gamestate::Playing && mode != Playermode::Client){
+                width--;
+                remakeWindow();
+                // Send remake message
+              }
+              break;
+            case sf::Keyboard::Key::Up:
+              if(state != Gamestate::Playing && mode != Playermode::Client){
+                height--;
+                remakeWindow();
+                // Send remake message
+              }
+              break;
+            case sf::Keyboard::Key::Down:
+              if(state != Gamestate::Playing && mode != Playermode::Client){
+                height++;
+                remakeWindow();
+                // Send remake message
+              }
+              break;
           }
       }
     }
@@ -860,4 +889,11 @@ void GuiGame::processPacket(sf::Packet& packet){
     flagsPlaced = 0;
     field = Field(height, width, mines);
   }
+}
+
+void GuiGame::remakeWindow(){
+  field = Field(height, width, mines);
+  delete window;
+  window = new sf::RenderWindow(sf::VideoMode(width * tile_size + border_size + side_bar_width, height * tile_size + border_size),
+  "Tiles", sf::Style::Titlebar);
 }

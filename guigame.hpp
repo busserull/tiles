@@ -37,6 +37,7 @@ private:
   bool getUserInput(std::string& inputString, int sizeLimit);
   void updateFlagCount();
   void processPacket(sf::Packet& packet);
+  void remakeWindow();
   int height;
   int width;
   int mines;
