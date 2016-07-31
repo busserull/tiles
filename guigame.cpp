@@ -32,7 +32,8 @@ namespace{
 }
 
 GuiGame::GuiGame(int height, int width, int mines) : height(height), width(width), mines(mines),
-flagsPlaced(0), state(Gamestate::Pending), mode(Playermode::Singleplayer), lastSelectedMultiplayerMode(Playermode::Client), playerName("Babbage"){
+flagsPlaced(0), state(Gamestate::Pending), type(Gametype::Casual), mode(Playermode::Singleplayer),
+lastSelectedMultiplayerMode(Playermode::Client), playerName("Babbage"){
   field = Field(height, width, mines);
   if(!PriFont.loadFromFile(primary_font)){
     throw std::runtime_error("Could not load " + primary_font);
@@ -50,6 +51,7 @@ GuiGame::GuiGame(const GuiGame& other){
   mines = other.mines;
   flagsPlaced = other.flagsPlaced;
   state = other.state;
+  type = other.type;
   mode = other.mode;
   lastSelectedMultiplayerMode = other.lastSelectedMultiplayerMode;
   playerName = other.playerName;
@@ -77,6 +79,7 @@ GuiGame& GuiGame::operator = (const GuiGame& rhs){
   mines = rhs.mines;
   flagsPlaced = rhs.flagsPlaced;
   state = rhs.state;
+  type = rhs.type;
   mode = rhs.mode;
   lastSelectedMultiplayerMode = rhs.lastSelectedMultiplayerMode;
   playerName = rhs.playerName;
@@ -405,6 +408,27 @@ void GuiGame::displayWelcomeScreen(){
   }
   playerName = inputName;
   if(mode == Playermode::Host){
+    // Get game type
+    {
+      bool inputSet = false;
+      std::string gametype;
+      while(!inputSet){
+        window->clear();
+        drawEmptyBackground();
+        switch(type){
+          case Gametype::Casual:
+            gametype = "Casual";
+            break;
+          case Gametype::SuddenDeath:
+            gametype = "Sudden death";
+            break;
+        }
+        drawInputBox("gametype:", gametype);
+        inputSet = getGameType(type);
+        window->display();
+      }
+    }
+    // Get port to listen on
     playerTurn = true; // Host goes first
     std::string inputPort = "55001";
     bool inputSet = false;
@@ -866,6 +890,36 @@ bool GuiGame::getUserInput(std::string& inputString, int sizeLimit){
     }
   }
   return false;
+}
+
+bool GuiGame::getGameType(Gametype& currentType){
+  sf::Event event;
+  while(window->pollEvent(event)){
+    if(event.type == sf::Event::EventType::KeyPressed){
+      switch(event.key.code){
+        case sf::Keyboard::Key::Return:
+          return true;
+          break;
+        case sf::Keyboard::Key::S:
+          type = Gametype::SuddenDeath;
+          break;
+        case sf::Keyboard::Key::C:
+          type = Gametype::Casual;
+          break;
+        case sf::Keyboard::Key::Right:
+        case sf::Keyboard::Key::Left:
+        case sf::Keyboard::Key::Up:
+        case sf::Keyboard::Key::Down:
+          if(type == Gametype::Casual){
+            type = Gametype::SuddenDeath;
+          }
+          else{
+            type = Gametype::Casual;
+          }
+          break;
+      }
+    }
+  }
 }
 
 void GuiGame::updateFlagCount(){

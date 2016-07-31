@@ -14,6 +14,10 @@ enum class Playermode{
   Singleplayer, Host, Client
 };
 
+enum class Gametype{
+  Casual, SuddenDeath
+};
+
 class GuiGame{
 public:
   GuiGame(int height, int width, int mines);
@@ -35,6 +39,7 @@ private:
   void drawInputBox(std::string inputType,std::string textField);
   bool getUserNameAndMode(std::string& inputName, bool& changed);
   bool getUserInput(std::string& inputString, int sizeLimit);
+  bool getGameType(Gametype& currentType);
   void updateFlagCount();
   void processPacket(sf::Packet& packet);
   void remakeWindow();
@@ -44,6 +49,7 @@ private:
   int flagsPlaced;
   Field field;
   Gamestate state;
+  Gametype type;
   Playermode mode;
   Playermode lastSelectedMultiplayerMode;
   std::string playerName;
