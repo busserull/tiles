@@ -356,6 +356,7 @@ void GuiGame::displayWelcomeScreen(){
     }
     // Now create Host
     connection = Connection(ConnectionState::Host);
+    connection.setConnectionName(playerName);
     connection.setPort(inputPort);
     window->clear();
     drawEmptyBackground();
@@ -395,13 +396,28 @@ void GuiGame::displayWelcomeScreen(){
     }
     // Now create Client
     connection = Connection(ConnectionState::Client);
+    connection.setConnectionName(playerName);
     connection.setIP(inputIPAddress);
     connection.setPort(inputPort);
     window->clear();
     drawEmptyBackground();
     drawInputBox("", "Reaching host...");
     window->display();
-    connection.connect();
+    while(!connection.connect()){
+      bool inputSet = false;
+      while(!inputSet){
+        window->clear();
+        drawEmptyBackground();
+        drawInputBox("Must have different name than host:", playerName);
+        inputSet = getUserInput(playerName, max_name_length);
+        ut::formatPlayerName(playerName);
+        if(playerName == ""){
+          inputSet = false;
+        }
+        window->display();
+      }
+      connection.setConnectionName(playerName);
+    }
     connection.setSocketBlock(false);
     window->clear();
   }

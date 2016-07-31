@@ -12,4 +12,6 @@ namespace ut{
   bool validIP(std::string ipAddress);
 
   void stripNonIPLetters(std::string& ipAddress);
+
+  void formatPlayerName(std::string& playerName);
 }

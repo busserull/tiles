@@ -1,6 +1,7 @@
 #include "utilities.hpp"
 #include <cstdlib>
 #include <ctime>
+#include <cctype>
 
 namespace ut{
   int randInclusive(int lower, int upper){
@@ -106,5 +107,20 @@ namespace ut{
       }
     }
     ipAddress = cleanString;
+  }
+
+  void formatPlayerName(std::string& playerName){
+    std::string onlyLetters;
+    for(int i = 0; i < playerName.length(); i++){
+      char letter = playerName[i];
+      letter = tolower(letter);
+      if(letter >= 'a' && letter <= 'z'){
+        onlyLetters.push_back(letter);
+      }
+    }
+    if(onlyLetters.length() > 0){
+      onlyLetters[0] = toupper(onlyLetters[0]);
+    }
+    playerName = onlyLetters;
   }
 }

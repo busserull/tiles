@@ -1,17 +1,19 @@
 #include "connection.hpp"
 #include <stdexcept>
 
-Connection::Connection() : state(ConnectionState::Void), ipAddress(""), port(""){
+Connection::Connection() : state(ConnectionState::Void), ipAddress(""), port(""), connectionName(""), alreadyConnected(false){
 
 }
 
-Connection::Connection(ConnectionState state) : state(state), ipAddress(""), port(""){
+Connection::Connection(ConnectionState state) : state(state), ipAddress(""), port(""), connectionName(""), alreadyConnected(false){
 
 }
 
 Connection::Connection(const Connection& other){
   ipAddress = other.ipAddress;
   port = other.port;
+  connectionName = other.connectionName;
+  alreadyConnected = false; // Because socket is non-copyable
   state = other.state;
 }
 
@@ -21,6 +23,8 @@ Connection& Connection::operator = (const Connection& rhs){
   }
   ipAddress = rhs.ipAddress;
   port = rhs.port;
+  connectionName = rhs.connectionName;
+  alreadyConnected = false; // Because socket is non-copyable
   state = rhs.state;
   return *this;
 }
@@ -33,11 +37,18 @@ void Connection::setIP(std::string ip){
   ipAddress = ip;
 }
 
+void Connection::setConnectionName(std::string name){
+  connectionName = name;
+}
+
 void Connection::setSocketBlock(bool block){
   socket.setBlocking(block);
 }
 
-void Connection::connect(){
+bool Connection::connect(){
+  if(connectionName == ""){
+    throw std::runtime_error("Connection name not set");
+  }
   if(state == ConnectionState::Host){
     if(listener.listen(std::stoi(port)) != sf::Socket::Done){
       throw std::runtime_error("Cannot listen to port " + port);
@@ -45,11 +56,42 @@ void Connection::connect(){
     if(listener.accept(socket) != sf::Socket::Done){
       throw std::runtime_error("No client connected");
     }
+    bool clientHasDifferentName = false;
+    while(!clientHasDifferentName){
+      // Send host name
+      sf::Packet packet;
+      packet << connectionName;
+      socket.send(packet);
+      // Wait for client to tell if names are the same
+      packet.clear();
+      socket.receive(packet);
+      packet >> clientHasDifferentName;
+    }
+    return true;
   }
   else{
-    sf::Socket::Status status = sf::Socket::Disconnected;
-    while(status != sf::Socket::Done){
-      status = socket.connect(ipAddress, std::stoi(port));
+    if(!alreadyConnected){
+      sf::Socket::Status status = sf::Socket::Disconnected;
+      while(status != sf::Socket::Done){
+        status = socket.connect(ipAddress, std::stoi(port));
+      }
+      alreadyConnected = true;
+    }
+    sf::Packet packet;
+    socket.receive(packet);
+    std::string hostName;
+    packet >> hostName;
+    if(hostName == connectionName){
+      packet.clear();
+      packet << false;
+      socket.send(packet);
+      return false;
+    }
+    else{
+      packet.clear();
+      packet << true;
+      socket.send(packet);
+      return true;
     }
   }
 }

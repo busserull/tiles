@@ -15,8 +15,9 @@ public:
   Connection& operator = (const Connection& rhs);
   void setPort(std::string port);
   void setIP(std::string ip);
+  void setConnectionName(std::string name);
   void setSocketBlock(bool block);
-  void connect();
+  bool connect();
   void send(sf::Packet& packet);
   void send(int x, int y, std::string flagger); // Flag
   void send(int x, int y); // Open
@@ -25,8 +26,10 @@ public:
 private:
   std::string ipAddress;
   std::string port;
+  std::string connectionName;
   sf::TcpListener listener;
   sf::TcpSocket socket;
+  bool alreadyConnected;
   ConnectionState state;
 };
 
