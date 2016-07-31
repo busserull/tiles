@@ -122,28 +122,52 @@ void GuiGame::getEvent(){
               if(state != Gamestate::Playing && mode != Playermode::Client){
                 width++;
                 remakeWindow();
-                // Send remake message
+                if(mode == Playermode::Host){
+                  std::string command = "remakeWindow";
+                  std::string adverb = "right";
+                  sf::Packet packet;
+                  packet << command << adverb;
+                  connection.send(packet);
+                }
               }
               break;
             case sf::Keyboard::Key::Left:
               if(state != Gamestate::Playing && mode != Playermode::Client){
                 width--;
                 remakeWindow();
-                // Send remake message
+                if(mode == Playermode::Host){
+                  std::string command = "remakeWindow";
+                  std::string adverb = "left";
+                  sf::Packet packet;
+                  packet << command << adverb;
+                  connection.send(packet);
+                }
               }
               break;
             case sf::Keyboard::Key::Up:
               if(state != Gamestate::Playing && mode != Playermode::Client){
                 height--;
                 remakeWindow();
-                // Send remake message
+                if(mode == Playermode::Host){
+                  std::string command = "remakeWindow";
+                  std::string adverb = "up";
+                  sf::Packet packet;
+                  packet << command << adverb;
+                  connection.send(packet);
+                }
               }
               break;
             case sf::Keyboard::Key::Down:
               if(state != Gamestate::Playing && mode != Playermode::Client){
                 height++;
                 remakeWindow();
-                // Send remake message
+                if(mode == Playermode::Host){
+                  std::string command = "remakeWindow";
+                  std::string adverb = "down";
+                  sf::Packet packet;
+                  packet << command << adverb;
+                  connection.send(packet);
+                }
               }
               break;
           }
@@ -888,6 +912,23 @@ void GuiGame::processPacket(sf::Packet& packet){
     state = Gamestate::Pending;
     flagsPlaced = 0;
     field = Field(height, width, mines);
+  }
+  else if(messageType == "remakeWindow"){
+    std::string direction;
+    packet >> direction;
+    if(direction == "up"){
+      height--;
+    }
+    else if(direction == "down"){
+      height++;
+    }
+    else if(direction == "left"){
+      width--;
+    }
+    else if(direction == "right"){
+      width++;
+    }
+    remakeWindow();
   }
 }
 

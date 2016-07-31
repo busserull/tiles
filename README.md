@@ -66,6 +66,16 @@ it is at any given time. Even though you can only open tiles
 when it is your turn, you are free to flag closed tiles
 whenever you wish.
 
+*Additional controls*
+Q will at any time except for text entry close the window.
+If you are either playing singleplayer or as host, the
+board can be resized with the keyboard arrows as follows
+as long as no game has been started:
+* Up - Decrease height by one tile.
+* Down - Increase height by one tile.
+* Left - Decrease width by one tile.
+* Right - Increase width by one tile.
+
 ### Description
 The game lets the player choose between Singleplayer,
 Multiplayer host, or Multiplayer client - as well as
@@ -76,7 +86,6 @@ though some features remain unimplemented. There is
 also a little bit of polish to be done.
 
 ### Coming features
-* Change board size
 * File statistics
 * Sudden-death for multiplayer
 * Store last used name and IP/port
