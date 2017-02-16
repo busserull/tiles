@@ -1,4 +1,6 @@
 #include <iostream>
+#include <chrono>
+#include <thread>
 #include "field.hpp"
 #include "guigame.hpp"
 
@@ -15,6 +17,8 @@ int main(){
     game.getEvent();
     game.display();
     game.updateGameState();
+	// Refresh rate ~60Hz
+	std::this_thread::sleep_for(std::chrono::milliseconds(17));
   }
   return 0;
 }
