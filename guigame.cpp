@@ -318,7 +318,7 @@ void GuiGame::display(){
     stateLabel.setCharacterSize(height * tile_size / 4);
     stateLabel.setStyle(sf::Text::Bold);
     stateLabel.setString(indicatorStr);
-    stateLabel.setColor(side_bar_color);
+    stateLabel.setFillColor(side_bar_color);
     sf::FloatRect boundingBox = stateLabel.getLocalBounds();
     stateLabel.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top + boundingBox.height / 2);
     stateLabel.setPosition(width * tile_size + side_bar_width / 2, height * tile_size / 6);
@@ -365,7 +365,7 @@ void GuiGame::display(){
     timeLabel.setCharacterSize(height * tile_size / 16);
     timeLabel.setStyle(sf::Text::Bold);
     timeLabel.setString(minString + ":" + secString); ///
-    timeLabel.setColor(side_bar_color); ///
+    timeLabel.setFillColor(side_bar_color); ///
     sf::FloatRect boundingBox = timeLabel.getLocalBounds();
     timeLabel.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top + boundingBox.height / 2);
     timeLabel.setPosition(width * tile_size + side_bar_width / 2, height * tile_size / 2);
@@ -383,7 +383,7 @@ void GuiGame::display(){
     else{
       mineLabel.setString(std::to_string(mines - flagsPlaced));
     }
-    mineLabel.setColor(side_bar_color);
+    mineLabel.setFillColor(side_bar_color);
     sf::FloatRect boundingBox = mineLabel.getLocalBounds();
     mineLabel.setOrigin(boundingBox.left + boundingBox.width / 2, boundingBox.top + boundingBox.height / 2);
     mineLabel.setPosition(width * tile_size + side_bar_width / 2, height * tile_size * 5 / 6);
@@ -397,10 +397,10 @@ void GuiGame::display(){
     minesOrFlags.setFont(SecFont);
     minesOrFlags.setCharacterSize(height * tile_size / 24);
     if(state != Gamestate::Playing && mode != Playermode::Client){
-      minesOrFlags.setColor(side_bar_mutable_color);
+      minesOrFlags.setFillColor(side_bar_mutable_color);
     }
     else{
-      minesOrFlags.setColor(side_bar_color);
+      minesOrFlags.setFillColor(side_bar_color);
     }
     if(mines - flagsPlaced == 1){ // One flag left to place
       if(mode == Playermode::Singleplayer || state == Gamestate::Pending){
@@ -708,12 +708,12 @@ void GuiGame::drawLabel(int x, int y){
   if(field.isOpen(x, y)){              // tile open
     if(field.isMine(x, y)){
       label.setString("x");
-      label.setColor(mine_color);
+      label.setFillColor(mine_color);
     }
     else{
       int mines = field.getSurroundingMines(x, y);
       label.setString(std::to_string(mines));
-      label.setColor(number_colors[mines]);
+      label.setFillColor(number_colors[mines]);
       if(mines == 0){
         needToDraw = false;
       }
@@ -722,7 +722,7 @@ void GuiGame::drawLabel(int x, int y){
   else{                               // tile closed
     if(field.isFlagged(x, y)){
       label.setString("F");
-      label.setColor((field.getFlagger(x, y) == playerName?flag_color:opponent_flag_color));
+      label.setFillColor((field.getFlagger(x, y) == playerName?flag_color:opponent_flag_color));
     }
     else{
       needToDraw = false;
@@ -789,14 +789,14 @@ void GuiGame::drawGameMode(){
       hostClientLabel.setString(hostClientString);
     }
     if(mode == Playermode::Singleplayer){
-      singleLabel.setColor(side_bar_color);
-      multiLabel.setColor(open_tile_color);
-      hostClientLabel.setColor(open_tile_color);
+      singleLabel.setFillColor(side_bar_color);
+      multiLabel.setFillColor(open_tile_color);
+      hostClientLabel.setFillColor(open_tile_color);
     }
     else{
-      singleLabel.setColor(open_tile_color);
-      multiLabel.setColor(side_bar_color);
-      hostClientLabel.setColor(side_bar_color);
+      singleLabel.setFillColor(open_tile_color);
+      multiLabel.setFillColor(side_bar_color);
+      hostClientLabel.setFillColor(side_bar_color);
     }
     // Determine origin
     {
@@ -836,7 +836,7 @@ void GuiGame::drawInputBox(std::string inputType, std::string textField){
   nameLabel.setCharacterSize(height * tile_size / 14);
   nameLabel.setStyle(sf::Text::Bold);
   nameLabel.setString(inputType);
-  nameLabel.setColor(open_tile_color);
+  nameLabel.setFillColor(open_tile_color);
   {
     sf::FloatRect boundingBox = nameLabel.getLocalBounds();
     nameLabel.setOrigin(boundingBox.left, boundingBox.top + boundingBox.height);
@@ -849,7 +849,7 @@ void GuiGame::drawInputBox(std::string inputType, std::string textField){
   userName.setCharacterSize(height * tile_size / 10);
   userName.setStyle(sf::Text::Bold);
   userName.setString("M"); // So the name does not jump up and down if it gets changed
-  userName.setColor(closed_tile_color);
+  userName.setFillColor(closed_tile_color);
   {
     sf::FloatRect boundingBox = userName.getLocalBounds();
     userName.setOrigin(boundingBox.left, boundingBox.top + boundingBox.height / 2);
